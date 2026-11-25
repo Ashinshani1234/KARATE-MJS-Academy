@@ -1,0 +1,3677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="artifact-type" content="narrative">
+  <meta name="design-style" content="bauhaus">
+  <title>MJS Karate Academy — MJS Smart Dojo Kurunegala</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/lucide@1.43.0/dist/umd/lucide.min.js"></script>
+  <style>
+    :root {
+      color-scheme: light;
+
+      /* Page and surfaces (Bauhaus light + requested White primary ground) */
+      --background: #FFFFFF;
+      --surface-container-low: #F8F8F6;
+      --surface-container: #F1F1ED;
+      --surface-container-high: #E7E7E1;
+      --surface-dark: #141414;
+      --surface-wood: #A86B3A;
+      --surface-wood-dark: #6D3F1C;
+
+      /* Ink */
+      --on-surface: #141414;
+      --on-surface-variant: #444444;
+      --on-dark: #FFFFFF;
+
+      /* Lines */
+      --outline: #141414;
+      --outline-variant: #CFCFC8;
+
+      /* Requested Brand Palette: Red #D90429, Blue #0077B6, Yellow #FFB703, White #FFFFFF */
+      --primary: #141414;
+      --on-primary: #FFFFFF;
+      --primary-container: #FFB703;
+      --on-primary-container: #141414;
+      --secondary: #D90429;
+      --on-secondary: #FFFFFF;
+      --tertiary: #0077B6;
+      --on-tertiary: #FFFFFF;
+      --error: #D90429;
+      --on-error: #FFFFFF;
+
+      /* Semantic */
+      --positive: #0F7B47;
+      --on-positive: #FFFFFF;
+      --warning: #B57B00;
+      --focus: #0077B6;
+
+      /* Data series */
+      --data-1: #D90429;
+      --data-2: #0077B6;
+      --data-3: #141414;
+      --data-4: #996D00;
+      --data-context: #B0B0A8;
+
+      /* Fonts */
+      --font-headline: 'Space Grotesk', sans-serif;
+      --font-body: 'Inter', sans-serif;
+      --font-label: 'Space Grotesk', sans-serif;
+
+      /* Type scale */
+      --display-size: clamp(2.5rem, 1.4rem + 4.2vw, 4.75rem);
+      --headline-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem);
+      --subhead-size: clamp(1.1875rem, 1.05rem + 0.5vw, 1.4375rem);
+      --body-size: clamp(1rem, 0.96rem + 0.2vw, 1.125rem);
+      --label-size: clamp(0.75rem, 0.72rem + 0.12vw, 0.8125rem);
+
+      /* Shape */
+      --rounded: 0.125rem;
+      --rounded-lg: 0.25rem;
+
+      /* Style effects */
+      --border-thick: 3px solid var(--outline);
+      --border-medium: 2px solid var(--outline);
+      --offset-shadow: 5px 5px 0 var(--outline);
+      --offset-shadow-sm: 3px 3px 0 var(--outline);
+      --rule-heavy: 6px solid var(--outline);
+
+      /* Spacing scale (4pt base) */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2.5rem;
+      --space-2xl: 4rem;
+      --space-3xl: 5.5rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+      --dur-micro: 120ms;
+      --dur-short: 220ms;
+      --dur-long: 420ms;
+    }
+
+    /* Base reset */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      overflow-x: clip;
+      margin: 0;
+      padding: 0;
+      background: var(--background);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      font-size: var(--body-size);
+      line-height: 1.58;
+      scroll-behavior: smooth;
+    }
+    header { position: static !important; }
+
+    .page-grid {
+      display: grid;
+      gap: var(--space-2xl);
+      padding: var(--space-lg);
+      max-width: 1240px;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .page-grid * { min-width: 0; }
+
+    /* Focus rings */
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4 {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      margin: 0;
+      color: var(--on-surface);
+    }
+    p { margin: 0; max-width: 65ch; }
+
+    .kicker {
+      display: inline-block;
+      font-family: var(--font-label);
+      font-weight: 700;
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: var(--space-xs) var(--space-sm);
+      border: var(--border-medium);
+    }
+    .kicker--yellow {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+    .kicker--blue {
+      background: var(--tertiary);
+      color: var(--on-tertiary);
+    }
+    .kicker--red {
+      background: var(--secondary);
+      color: var(--on-secondary);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-lg);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: var(--border-thick);
+      border-radius: var(--rounded);
+      box-shadow: var(--offset-shadow-sm);
+      background: var(--background);
+      color: var(--on-surface);
+      cursor: pointer;
+      transition: transform var(--dur-micro) var(--ease-out),
+                  box-shadow var(--dur-micro) var(--ease-out),
+                  background-color var(--dur-micro) var(--ease-out),
+                  color var(--dur-micro) var(--ease-out);
+      text-decoration: none;
+    }
+    .btn:hover:not(:disabled) {
+      background: var(--primary);
+      color: var(--on-primary);
+      transform: translate(-2px, -2px);
+      box-shadow: var(--offset-shadow);
+    }
+    .btn:active:not(:disabled) {
+      transform: translate(3px, 3px);
+      box-shadow: none;
+    }
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+    .btn--primary {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+    .btn--blue {
+      background: var(--tertiary);
+      color: var(--on-tertiary);
+    }
+    .btn--red {
+      background: var(--secondary);
+      color: var(--on-secondary);
+    }
+    .btn--dark {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+    .btn--sm {
+      min-height: 38px;
+      padding: var(--space-xs) var(--space-md);
+    }
+
+    /* Bauhaus Blocks & Cards */
+    .block {
+      border: var(--border-thick);
+      border-radius: var(--rounded);
+      box-shadow: var(--offset-shadow);
+      background: var(--surface-container-low);
+      padding: var(--space-lg);
+    }
+    .block--white { background: var(--background); }
+    .block--yellow {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+    .block--blue {
+      background: var(--tertiary);
+      color: var(--on-tertiary);
+    }
+    .block--blue h2, .block--blue h3, .block--blue p { color: var(--on-tertiary); }
+    .block--dark {
+      background: var(--surface-dark);
+      color: var(--on-dark);
+    }
+    .block--dark h2, .block--dark h3, .block--dark p { color: var(--on-dark); }
+
+    /* Masthead / Header */
+    .masthead {
+      border-bottom: var(--rule-heavy);
+      background: var(--background);
+      padding: var(--space-md) var(--space-lg);
+    }
+    .masthead-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-md);
+    }
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .brand-mark {
+      width: 48px;
+      height: 48px;
+      border: var(--border-thick);
+      background: var(--secondary);
+      color: var(--on-secondary);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 1.125rem;
+      box-shadow: var(--offset-shadow-sm);
+      flex-shrink: 0;
+    }
+    .brand-title {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: 1.125rem;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .brand-sub {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+    }
+    .nav-strip {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .nav-btn {
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--background);
+      color: var(--on-surface);
+      border: var(--border-medium);
+      cursor: pointer;
+      transition: background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+    }
+    .nav-btn:hover, .nav-btn.is-active {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+
+    /* Hero Title */
+    .hero-header {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: end;
+    }
+    .title {
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: var(--display-size);
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+      text-transform: uppercase;
+    }
+    .title mark {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      padding-inline: var(--space-xs);
+      box-decoration-break: clone;
+    }
+    .hero-meta-box {
+      border: var(--border-thick);
+      background: var(--surface-container-low);
+      padding: var(--space-md);
+      box-shadow: var(--offset-shadow-sm);
+      display: grid;
+      gap: var(--space-sm);
+    }
+
+    /* 3D TikTok-Style Dojo Entrance Stage */
+    .dojo-stage-wrap {
+      position: relative;
+      border: var(--border-thick);
+      box-shadow: var(--offset-shadow);
+      background: var(--surface-dark);
+      overflow: hidden;
+      min-height: 520px;
+    }
+    .dojo-stage-wrap.is-shaking {
+      animation: dojoShake 360ms var(--ease-out);
+    }
+    @keyframes dojoShake {
+      0%, 100% { transform: translate(0, 0); }
+      20% { transform: translate(-7px, 4px); }
+      40% { transform: translate(7px, -4px); }
+      60% { transform: translate(-5px, -3px); }
+      80% { transform: translate(4px, 3px); }
+    }
+    #dojo-3d-canvas {
+      display: block;
+      width: 100%;
+      height: 520px;
+      min-height: 520px;
+      cursor: pointer;
+    }
+
+    /* Step 5: Top-Corner Skip Entrance Animation > */
+    .skip-entrance-btn {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-md);
+      z-index: 30;
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-label);
+      font-weight: 700;
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      border: var(--border-thick);
+      box-shadow: var(--offset-shadow-sm);
+      cursor: pointer;
+    }
+    .skip-entrance-btn:hover {
+      background: var(--background);
+      color: var(--on-surface);
+    }
+    .skip-entrance-btn.is-hidden {
+      display: none;
+    }
+
+    /* Step HUD Top Left */
+    .stage-hud {
+      position: absolute;
+      top: var(--space-md);
+      left: var(--space-md);
+      z-index: 25;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+      pointer-events: none;
+    }
+    .stage-badge {
+      pointer-events: auto;
+      background: var(--background);
+      color: var(--on-surface);
+      border: var(--border-medium);
+      padding: var(--space-xs) var(--space-sm);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+    .stage-badge--red {
+      background: var(--secondary);
+      color: var(--on-secondary);
+    }
+
+    /* Step 1 Wooden Door Opening Overlay */
+    .door-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .door-panel {
+      background: var(--surface-wood);
+      border: var(--border-thick);
+      position: relative;
+      transition: transform 1.8s var(--ease-out);
+      display: flex;
+      align-items: center;
+    }
+    .door-panel--left {
+      justify-content: flex-end;
+      border-right: 4px solid var(--surface-wood-dark);
+      background-image: repeating-linear-gradient(
+        0deg,
+        var(--surface-wood) 0px,
+        var(--surface-wood) 36px,
+        var(--surface-wood-dark) 36px,
+        var(--surface-wood-dark) 40px
+      );
+    }
+    .door-panel--right {
+      justify-content: flex-start;
+      border-left: 4px solid var(--surface-wood-dark);
+      background-image: repeating-linear-gradient(
+        0deg,
+        var(--surface-wood) 0px,
+        var(--surface-wood) 36px,
+        var(--surface-wood-dark) 36px,
+        var(--surface-wood-dark) 40px
+      );
+    }
+    .door-handle {
+      width: 18px;
+      height: 74px;
+      background: var(--primary-container);
+      border: var(--border-thick);
+      margin: var(--space-md);
+    }
+    .door-overlay.is-open .door-panel--left {
+      transform: translateX(-105%);
+    }
+    .door-overlay.is-open .door-panel--right {
+      transform: translateX(105%);
+    }
+    .door-light-beam {
+      position: absolute;
+      inset: 0;
+      z-index: 21;
+      pointer-events: none;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: var(--space-lg);
+      transition: opacity 420ms var(--ease-out);
+    }
+    .door-light-beam.is-hidden {
+      opacity: 0;
+    }
+    .door-title-card {
+      background: var(--background);
+      color: var(--on-surface);
+      border: var(--border-thick);
+      box-shadow: var(--offset-shadow);
+      padding: var(--space-lg) var(--space-xl);
+      max-width: 560px;
+    }
+    .door-title-card h2 {
+      font-size: var(--headline-size);
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+    .door-glow-strip {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 24px;
+      transform: translateX(-50%);
+      background: var(--primary-container);
+      opacity: 0.85;
+      transition: width 600ms var(--ease-out), opacity 600ms var(--ease-out);
+    }
+    .door-overlay.is-open + .door-light-beam .door-glow-strip {
+      width: 220px;
+      opacity: 0;
+    }
+
+    /* Step 2 OSS Impact Pop */
+    .oss-impact-pop {
+      position: absolute;
+      inset: 0;
+      z-index: 22;
+      pointer-events: none;
+      display: grid;
+      place-items: center;
+      opacity: 0;
+      transform: scale(0.75);
+      transition: opacity 180ms var(--ease-out), transform 180ms var(--ease-out);
+    }
+    .oss-impact-pop.is-visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+    .oss-banner {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      border: var(--border-thick);
+      box-shadow: var(--offset-shadow);
+      padding: var(--space-md) var(--space-xl);
+      font-family: var(--font-headline);
+      font-weight: 700;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      letter-spacing: -0.03em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    /* Step 3 & 4 Interactive Board Strip */
+    .board-dock {
+      background: var(--surface-container-low);
+      border-top: var(--border-thick);
+      padding: var(--space-md);
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: var(--space-md);
+      align-items: center;
+    }
+    .board-triggers {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+    .board-btn {
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-label);
+      font-weight: 700;
+      font-size: var(--label-size);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: var(--border-thick);
+      box-shadow: var(--offset-shadow-sm);
+      background: var(--background);
+      color: var(--on-surface);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+    .board-btn:hover, .board-btn.is-active {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      transform: translate(-1px, -1px);
+    }
+    .board-btn--blue.is-active, .board-btn--blue:hover {
+      background: var(--tertiary);
+      color: var(--on-tertiary);
+    }
+    .board-status-line {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--on-surface);
+    }
+
+    /* Section Openings (Bauhaus Defining Treatment 3) */
+    .section-open {
+      --accent: var(--tertiary);
+      border-top: var(--space-sm) solid var(--accent);
+      padding-top: var(--space-lg);
+      display: grid;
+      gap: var(--space-lg);
+    }
+    .section-open--red { --accent: var(--secondary); }
+    .section-open--yellow { --accent: var(--primary-container); }
+    .section-open--black { --accent: var(--primary); }
+
+    .section-head-row {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: end;
+    }
+    .section-head-row h2 {
+      font-size: var(--headline-size);
+      line-height: 1.06;
+      letter-spacing: -0.02em;
+    }
+
+    /* Official Cover Banner SVG Container */
+    .cover-banner-frame {
+      border: var(--border-thick);
+      box-shadow: var(--offset-shadow);
+      background: var(--background);
+      overflow: hidden;
+    }
+    .cover-banner-svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Grids */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+      gap: var(--space-lg);
+    }
+    .asymmetric-2-1 {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+    .asymmetric-1-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      gap: var(--space-lg);
+      align-items: start;
+    }
+
+    /* Key Figures */
+    .figure-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+      gap: var(--space-md);
+      border-top: var(--border-thick);
+      padding-top: var(--space-lg);
+    }
+    .figure-card {
+      border: var(--border-thick);
+      padding: var(--space-md);
+      background: var(--background);
+      box-shadow: var(--offset-shadow-sm);
+    }
+    .figure-label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface-variant);
+    }
+    .figure-val {
+      font-family: var(--font-headline);
+      font-size: clamp(2rem, 3vw, 2.75rem);
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      margin-block: var(--space-xs);
+    }
+
+    /* Class Experience Timeline */
+    .timeline-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      align-items: center;
+    }
+    .timeline-track {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr));
+      gap: var(--space-md);
+    }
+    .timeline-step {
+      text-align: left;
+      border: var(--border-thick);
+      background: var(--background);
+      padding: var(--space-md);
+      box-shadow: var(--offset-shadow-sm);
+      cursor: pointer;
+      display: grid;
+      gap: var(--space-xs);
+      align-content: start;
+    }
+    .timeline-step.is-active {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+    .step-num {
+      display: inline-block;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      background: var(--primary);
+      color: var(--on-primary);
+      padding: 2px var(--space-xs);
+      width: fit-content;
+    }
+
+    /* Schedule Table */
+    .table-wrap {
+      border: var(--border-thick);
+      box-shadow: var(--offset-shadow);
+      background: var(--background);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9375rem;
+    }
+    thead th {
+      background: var(--surface-container-high);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      text-align: left;
+      padding: var(--space-md);
+      border-bottom: var(--border-thick);
+    }
+    tbody td {
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--outline-variant);
+      vertical-align: middle;
+    }
+    .num-cell {
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px var(--space-sm);
+      border: var(--border-medium);
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+    }
+    .tag--blue {
+      background: var(--tertiary);
+      color: var(--on-tertiary);
+    }
+    .tag--dark {
+      background: var(--primary);
+      color: var(--on-primary);
+    }
+    .tag--green {
+      background: var(--positive);
+      color: var(--on-positive);
+    }
+    .tag--red {
+      background: var(--error);
+      color: var(--on-error);
+    }
+
+    /* Video Hub Technique Player */
+    .technique-canvas {
+      width: 100%;
+      height: 300px;
+      min-height: 300px;
+      display: block;
+      background: var(--surface-dark);
+      border: var(--border-thick);
+    }
+    .chart-box {
+      position: relative;
+      min-height: 290px;
+      height: 290px;
+      width: 100%;
+    }
+
+    /* Form Controls */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+      gap: var(--space-md);
+      align-items: end;
+    }
+    .field {
+      display: grid;
+      gap: var(--space-xs);
+    }
+    .field label {
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--on-surface);
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      min-height: 44px;
+      padding: var(--space-sm) var(--space-sm);
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--on-surface);
+      background: var(--background);
+      border: none;
+      border-bottom: var(--border-thick);
+      border-radius: 0;
+    }
+    .field select {
+      padding-right: var(--space-xl);
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-bottom-color: var(--tertiary);
+      outline: 2px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* Printable Registration Slip & Certificate */
+    .slip-card {
+      border: var(--border-thick);
+      background: var(--background);
+      padding: var(--space-lg);
+      box-shadow: var(--offset-shadow);
+      display: grid;
+      gap: var(--space-md);
+    }
+    .slip-header {
+      border-bottom: var(--border-thick);
+      padding-bottom: var(--space-sm);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    /* Hidden Staff Portal */
+    .staff-portal-shell {
+      border: var(--border-thick);
+      box-shadow: var(--offset-shadow);
+      background: var(--surface-container-low);
+      padding: var(--space-lg);
+      display: grid;
+      gap: var(--space-lg);
+    }
+    .staff-portal-shell.is-hidden {
+      display: none;
+    }
+    .staff-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      border-bottom: var(--border-thick);
+      padding-bottom: var(--space-md);
+    }
+    .staff-tab-btn {
+      min-height: 44px;
+      padding: var(--space-xs) var(--space-md);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: var(--border-medium);
+      background: var(--background);
+      color: var(--on-surface);
+      cursor: pointer;
+    }
+    .staff-tab-btn.is-active {
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      border-width: 3px;
+    }
+    .staff-panel { display: none; gap: var(--space-lg); }
+    .staff-panel.is-active { display: grid; }
+
+    /* QR Scanner Simulation Box */
+    .qr-scanner-box {
+      position: relative;
+      border: var(--border-thick);
+      background: var(--surface-dark);
+      color: var(--on-dark);
+      padding: var(--space-lg);
+      min-height: 200px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+    .qr-laser {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--secondary);
+      top: 20%;
+      animation: qrSweep 2s var(--ease-in-out) infinite alternate;
+    }
+    @keyframes qrSweep {
+      from { top: 15%; }
+      to { top: 85%; }
+    }
+
+    /* Certificate Preview */
+    .cert-frame {
+      border: 6px solid var(--outline);
+      outline: 3px solid var(--primary-container);
+      outline-offset: -12px;
+      background: var(--background);
+      padding: var(--space-xl);
+      display: grid;
+      gap: var(--space-md);
+      text-align: center;
+    }
+    .cert-sig-row {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+      padding-top: var(--space-md);
+      border-top: var(--border-medium);
+      text-align: left;
+    }
+
+    /* Inline status banner */
+    .status-msg {
+      padding: var(--space-sm) var(--space-md);
+      border: var(--border-medium);
+      font-family: var(--font-label);
+      font-size: var(--label-size);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      background: var(--primary-container);
+      color: var(--on-primary-container);
+      display: none;
+    }
+    .status-msg.is-visible { display: block; }
+    .status-msg--error {
+      background: var(--error);
+      color: var(--on-error);
+    }
+    .status-msg--ok {
+      background: var(--positive);
+      color: var(--on-positive);
+    }
+
+    /* Footer */
+    .site-footer {
+      border-top: var(--rule-heavy);
+      padding: var(--space-xl) var(--space-lg);
+      max-width: 1240px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .hero-header,
+      .section-head-row,
+      .asymmetric-2-1,
+      .asymmetric-1-2,
+      .board-dock {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 640px) {
+      .page-grid {
+        grid-template-columns: 1fr;
+        padding: var(--space-md);
+        gap: var(--space-xl);
+      }
+      #dojo-3d-canvas, .dojo-stage-wrap {
+        min-height: 400px;
+        height: 400px;
+      }
+      .cert-sig-row {
+        flex-direction: column;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* Clean Print Styles for Registration Slip & Official Certificate */
+    @media print {
+      body * { visibility: hidden; }
+      .print-target, .print-target * { visibility: visible; }
+      .print-target {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none !important;
+      }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="masthead no-print">
+    <div class="masthead-inner">
+      <div class="brand-lockup">
+        <div class="brand-mark" aria-hidden="true">MJS</div>
+        <div>
+          <div class="brand-title">MJS KARATE ACADEMY</div>
+          <div class="brand-sub">MJS Smart Dojo • Kurunegala, Sri Lanka</div>
+        </div>
+      </div>
+      <nav class="nav-strip" aria-label="Primary sections">
+        <button type="button" class="nav-btn is-active" onclick="scrollToSection('about')">About</button>
+        <button type="button" class="nav-btn" onclick="scrollToSection('training')">Training</button>
+        <button type="button" class="nav-btn" onclick="scrollToSection('schedule')">Schedule</button>
+        <button type="button" class="nav-btn" onclick="scrollToSection('team')">Team</button>
+        <button type="button" class="nav-btn" onclick="scrollToSection('join')">Join</button>
+        <button type="button" class="btn btn--sm btn--dark" onclick="toggleStaffLockPanel()">
+          <i data-lucide="lock" aria-hidden="true"></i> Staff Portal
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page-grid">
+
+    <!-- HERO HEADER -->
+    <section class="hero-header no-print" aria-labelledby="hero-title">
+      <div>
+        <span class="kicker kicker--red">Kurunegala Shotokan Headquarters</span>
+        <h1 id="hero-title" class="title" style="margin-top: var(--space-sm);">
+          MJS <mark>Smart Dojo</mark> 3D Arena
+        </h1>
+      </div>
+      <div class="hero-meta-box">
+        <div class="figure-label">Chief Instructor</div>
+        <div style="font-family: var(--font-headline); font-weight: 700; font-size: 1.125rem;">
+          Sensei Jayasinghe Herath (5th Dan)
+        </div>
+        <p style="font-size: 0.9375rem; color: var(--on-surface-variant);">
+          Click any 3D board inside the dojo stage below—or use the technique triggers—to break boards with live karate strikes and jump straight to each dojo chapter.
+        </p>
+      </div>
+    </section>
+
+    <!-- 3D TIKTOK-STYLE 5-STEP DOJO ENTRANCE & INTERACTIVE STAGE -->
+    <section aria-label="Interactive 3D Dojo Entrance" class="no-print">
+      <div id="dojo-stage-wrap" class="dojo-stage-wrap">
+        <div class="stage-hud">
+          <span id="stage-step-badge" class="stage-badge stage-badge--red">Step 1/5 • Grand Dojo Doors</span>
+          <button type="button" class="stage-badge" onclick="replayEntrance()" style="cursor:pointer;">
+            Replay 5-Step Entrance
+          </button>
+          <button type="button" id="sound-toggle-btn" class="stage-badge" onclick="toggleDojoSound()" style="cursor:pointer;">
+            Audio: On
+          </button>
+        </div>
+
+        <!-- Step 5: Top-corner Skip Entrance Animation > button -->
+        <button type="button" id="skip-entrance-btn" class="skip-entrance-btn" onclick="skipEntrance()">
+          Skip Entrance Animation &gt;
+        </button>
+
+        <!-- Step 1: 2-second Grand Wooden Dojo Door Opening Overlay -->
+        <div id="door-overlay" class="door-overlay" aria-hidden="true">
+          <div class="door-panel door-panel--left">
+            <div class="door-handle"></div>
+          </div>
+          <div class="door-panel door-panel--right">
+            <div class="door-handle"></div>
+          </div>
+        </div>
+        <div id="door-light-beam" class="door-light-beam">
+          <div class="door-glow-strip" aria-hidden="true"></div>
+          <div class="door-title-card">
+            <span class="kicker kicker--yellow">Kurunegala • Shotokan Karate</span>
+            <h2 style="margin-top: var(--space-sm);">Welcome to MJS Smart Dojo</h2>
+            <p style="margin-top: var(--space-xs); color: var(--on-surface-variant);">
+              Discipline, Speed, Spirit — Entering the Main Tatami Hall
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2: OSS! Impact Pop -->
+        <div id="oss-impact-pop" class="oss-impact-pop" aria-live="polite">
+          <div id="oss-banner-text" class="oss-banner">OSS!</div>
+        </div>
+
+        <!-- Three.js 3D WebGL Canvas -->
+        <canvas id="dojo-3d-canvas" aria-label="3D Dojo interactive scene with Sensei, coaches, and 5 board-holding students"></canvas>
+      </div>
+
+      <!-- Step 3 & 4 Accessible Synchronized Board Controls -->
+      <div class="board-dock">
+        <div class="board-status-line" id="board-feedback">
+          Click a 3D board or button to trigger technique:
+        </div>
+        <div class="board-triggers" role="group" aria-label="Interactive Student Boards">
+          <button type="button" class="board-btn" data-board="about" onclick="triggerBoardAction('about')">
+            <i data-lucide="shield" aria-hidden="true"></i> About (Rei &amp; Block)
+          </button>
+          <button type="button" class="board-btn board-btn--blue" data-board="training" onclick="triggerBoardAction('training')">
+            <i data-lucide="zap" aria-hidden="true"></i> Training (3D High Kick Break)
+          </button>
+          <button type="button" class="board-btn" data-board="schedule" onclick="triggerBoardAction('schedule')">
+            <i data-lucide="calendar" aria-hidden="true"></i> Schedule (3D Punch Strike)
+          </button>
+          <button type="button" class="board-btn board-btn--blue" data-board="team" onclick="triggerBoardAction('team')">
+            <i data-lucide="users" aria-hidden="true"></i> Team (Shuto Salute)
+          </button>
+          <button type="button" class="board-btn" data-board="join" onclick="triggerBoardAction('join')">
+            <i data-lucide="award" aria-hidden="true"></i> Join (OSS! Shout)
+          </button>
+        </div>
+        <button type="button" class="btn btn--sm btn--primary" onclick="scrollToSection('join')">Enroll Now</button>
+      </div>
+    </section>
+
+    <!-- HIDDEN STAFF PORTAL ACCESS & WORKSPACE (Unlocked via Staff Portal button) -->
+    <section id="staff-portal-shell" class="staff-portal-shell is-hidden no-print" aria-label="Staff Operations Portal">
+      <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:var(--space-md);">
+        <div>
+          <span class="kicker kicker--red">Restricted Operations Console</span>
+          <h2 style="margin-top:var(--space-xs);">MJS Smart Dojo — Sensei &amp; Coach Staff Portal</h2>
+        </div>
+        <button type="button" class="btn btn--sm" onclick="closeStaffPortal()">Close Portal</button>
+      </div>
+
+      <!-- Passcode Gate -->
+      <div id="staff-auth-gate" class="block block--white">
+        <div class="asymmetric-2-1">
+          <div class="form-grid">
+            <div class="field">
+              <label for="staff-pin-input">Enter Sensei Staff PIN (Demo PIN: 2026)</label>
+              <input type="password" id="staff-pin-input" placeholder="2026" autocomplete="off">
+            </div>
+            <div style="display:flex; gap:var(--space-sm); flex-wrap:wrap;">
+              <button type="button" class="btn btn--primary" onclick="unlockStaffPortal()">Unlock Portal</button>
+              <button type="button" class="btn btn--blue" onclick="quickUnlockDemo()">Quick Demo Unlock</button>
+            </div>
+          </div>
+          <div>
+            <p style="font-size:0.9375rem; color:var(--on-surface-variant);">
+              Manage QR/Index attendance, full student roster CRUD, tuition ledger with automated Parent SMS alerts, belt grading promotions, printable certificates, and public applicant approvals.
+            </p>
+            <div id="staff-auth-msg" class="status-msg status-msg--error" style="margin-top:var(--space-sm);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unlocked Staff Workspace -->
+      <div id="staff-workspace" style="display:none; gap:var(--space-lg);">
+        <div class="staff-tabs" role="tablist" aria-label="Staff Portal Modules">
+          <button type="button" class="staff-tab-btn is-active" data-tab="scanner" onclick="switchStaffTab('scanner')">1. QR / Index Scanner</button>
+          <button type="button" class="staff-tab-btn" data-tab="students" onclick="switchStaffTab('students')">2. Student CRUD</button>
+          <button type="button" class="staff-tab-btn" data-tab="fees" onclick="switchStaffTab('fees')">3. Fee Ledger &amp; SMS</button>
+          <button type="button" class="staff-tab-btn" data-tab="grading" onclick="switchStaffTab('grading')">4. Belt Grading</button>
+          <button type="button" class="staff-tab-btn" data-tab="certificates" onclick="switchStaffTab('certificates')">5. Certificate Generator</button>
+          <button type="button" class="staff-tab-btn" data-tab="approvals" onclick="switchStaffTab('approvals')">
+            6. Applicant Approvals (<span id="pending-count-badge">0</span>)
+          </button>
+        </div>
+
+        <!-- TAB 1: QR / Index Attendance Scanner -->
+        <div id="staff-panel-scanner" class="staff-panel is-active">
+          <div class="asymmetric-1-2">
+            <div class="qr-scanner-box">
+              <div class="qr-laser" aria-hidden="true"></div>
+              <div style="text-align:center; z-index:2; display:grid; gap:var(--space-sm); justify-items:center;">
+                <i data-lucide="qr-code" style="width:52px; height:52px; color:var(--primary-container);" aria-hidden="true"></i>
+                <div style="font-family:var(--font-headline); font-weight:700; text-transform:uppercase;">
+                  Kurunegala Gate Terminal Active
+                </div>
+                <div style="font-size:0.875rem; color:var(--outline-variant);">
+                  Scan student QR badge or enter Index ID
+                </div>
+              </div>
+            </div>
+            <div class="block block--white" style="display:grid; gap:var(--space-md);">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="scan-index-input">Student Index / QR Code</label>
+                  <input type="text" id="scan-index-input" placeholder="e.g. MJS-101">
+                </div>
+                <div class="field">
+                  <label for="scan-session-select">Session Mat</label>
+                  <select id="scan-session-select">
+                    <option value="Evening Shotokan Kihon">Evening Shotokan Kihon</option>
+                    <option value="Kids Foundation Mat">Kids Foundation Mat</option>
+                    <option value="Elite Kumite Squad">Elite Kumite Squad</option>
+                  </select>
+                </div>
+                <button type="button" class="btn btn--primary" onclick="processAttendanceScan()">Check-In Student</button>
+              </div>
+              <div style="display:flex; flex-wrap:wrap; gap:var(--space-xs); align-items:center;">
+                <span class="figure-label" style="margin-right:var(--space-xs);">Quick QR Simulate:</span>
+                <button type="button" class="btn btn--sm" onclick="simulateQrScan('MJS-101')">MJS-101</button>
+                <button type="button" class="btn btn--sm" onclick="simulateQrScan('MJS-102')">MJS-102</button>
+                <button type="button" class="btn btn--sm" onclick="simulateQrScan('MJS-103')">MJS-103</button>
+                <button type="button" class="btn btn--sm" onclick="simulateQrScan('MJS-104')">MJS-104</button>
+              </div>
+              <div id="scan-feedback" class="status-msg"></div>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Time</th>
+                      <th>Index</th>
+                      <th>Student</th>
+                      <th>Session</th>
+                      <th>Sessions Total</th>
+                    </tr>
+                  </thead>
+                  <tbody id="attendance-log-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: Student CRUD -->
+        <div id="staff-panel-students" class="staff-panel">
+          <div class="block block--white" style="display:grid; gap:var(--space-md);">
+            <h3 id="crud-form-title">Add or Update Student Record</h3>
+            <input type="hidden" id="crud-edit-index" value="">
+            <div class="form-grid">
+              <div class="field">
+                <label for="crud-name">Full Name</label>
+                <input type="text" id="crud-name" placeholder="Student Full Name">
+              </div>
+              <div class="field">
+                <label for="crud-phone">Parent SMS Phone</label>
+                <input type="text" id="crud-phone" placeholder="077-XXXXXXX">
+              </div>
+              <div class="field">
+                <label for="crud-belt">Current Belt</label>
+                <select id="crud-belt">
+                  <option value="White Belt (10th Kyu)">White Belt (10th Kyu)</option>
+                  <option value="Yellow Belt (8th Kyu)">Yellow Belt (8th Kyu)</option>
+                  <option value="Orange Belt (7th Kyu)">Orange Belt (7th Kyu)</option>
+                  <option value="Green Belt (6th Kyu)">Green Belt (6th Kyu)</option>
+                  <option value="Blue Belt (5th Kyu)">Blue Belt (5th Kyu)</option>
+                  <option value="Brown Belt (1st Kyu)">Brown Belt (1st Kyu)</option>
+                  <option value="Black Belt (1st Dan)">Black Belt (1st Dan)</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="crud-track">Class Division</label>
+                <select id="crud-track">
+                  <option value="Kids (5–10 yrs)">Kids (5–10 yrs)</option>
+                  <option value="Juniors (11–16 yrs)">Juniors (11–16 yrs)</option>
+                  <option value="Seniors &amp; Kumite">Seniors &amp; Kumite</option>
+                </select>
+              </div>
+              <div style="display:flex; gap:var(--space-sm);">
+                <button type="button" class="btn btn--primary" onclick="saveStudentCrud()">Save Student</button>
+                <button type="button" class="btn" onclick="resetStudentCrudForm()">Clear</button>
+              </div>
+            </div>
+            <div id="crud-feedback" class="status-msg"></div>
+          </div>
+
+          <div class="block block--white" style="display:grid; gap:var(--space-md);">
+            <div class="form-grid">
+              <div class="field">
+                <label for="crud-search-input">Search Roster (Name or Index)</label>
+                <input type="text" id="crud-search-input" oninput="renderStaffRoster()" placeholder="Type name or MJS-...">
+              </div>
+              <div class="field">
+                <label for="crud-filter-track">Filter Division</label>
+                <select id="crud-filter-track" onchange="renderStaffRoster()">
+                  <option value="ALL">All Divisions</option>
+                  <option value="Kids (5–10 yrs)">Kids (5–10 yrs)</option>
+                  <option value="Juniors (11–16 yrs)">Juniors (11–16 yrs)</option>
+                  <option value="Seniors &amp; Kumite">Seniors &amp; Kumite</option>
+                </select>
+              </div>
+              <button type="button" class="btn btn--blue" onclick="exportRosterCsv()">Export Roster CSV</button>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Index</th>
+                    <th>Student</th>
+                    <th>Division</th>
+                    <th>Belt Rank</th>
+                    <th>Parent SMS</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="crud-roster-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: Fee Ledger with Automatic Parent SMS Notifications -->
+        <div id="staff-panel-fees" class="staff-panel">
+          <div class="asymmetric-2-1">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Index</th>
+                    <th>Student</th>
+                    <th>Parent SMS</th>
+                    <th>Monthly Fee</th>
+                    <th>Status</th>
+                    <th>Action &amp; Auto-SMS</th>
+                  </tr>
+                </thead>
+                <tbody id="fee-ledger-tbody"></tbody>
+              </table>
+            </div>
+            <div class="block block--white" style="display:grid; gap:var(--space-md);">
+              <h3>Automated Parent SMS Log</h3>
+              <p style="font-size:0.875rem; color:var(--on-surface-variant);">
+                Every payment confirmation or fee reminder automatically dispatches a formatted parent SMS receipt.
+              </p>
+              <div id="sms-log-list" style="display:grid; gap:var(--space-sm); max-height:360px; overflow-y:auto;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 4: Belt Grading Tracker -->
+        <div id="staff-panel-grading" class="staff-panel">
+          <div class="block block--white" style="display:grid; gap:var(--space-md);">
+            <h3>Shotokan Kyu &amp; Dan Promotion Tracker</h3>
+            <p style="font-size:0.9375rem; color:var(--on-surface-variant);">
+              Students require 16+ logged sessions for Kyu eligibility under Chief Examiner Sensei Jayasinghe Herath (5th Dan).
+            </p>
+            <div id="grading-feedback" class="status-msg"></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Index</th>
+                    <th>Student</th>
+                    <th>Current Belt</th>
+                    <th>Sessions</th>
+                    <th>Eligibility</th>
+                    <th>Promote Belt</th>
+                  </tr>
+                </thead>
+                <tbody id="grading-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 5: Printable Certificate Generator -->
+        <div id="staff-panel-certificates" class="staff-panel">
+          <div class="asymmetric-1-2">
+            <div class="block block--white" style="display:grid; gap:var(--space-md);">
+              <h3>Configure Certificate</h3>
+              <div class="field">
+                <label for="cert-student-select">Select Student</label>
+                <select id="cert-student-select" onchange="updateCertificatePreview()"></select>
+              </div>
+              <div class="field">
+                <label for="cert-type-select">Award Category</label>
+                <select id="cert-type-select" onchange="updateCertificatePreview()">
+                  <option value="Official Kyu Rank Promotion">Official Kyu Rank Promotion</option>
+                  <option value="All-Island Shotokan Merit Award">All-Island Shotokan Merit Award</option>
+                  <option value="Best Kumite Spirit &amp; Discipline">Best Kumite Spirit &amp; Discipline</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="cert-date-input">Grading Date</label>
+                <input type="date" id="cert-date-input" onchange="updateCertificatePreview()">
+              </div>
+              <button type="button" class="btn btn--primary" onclick="printCertificate()">
+                <i data-lucide="printer" aria-hidden="true"></i> Print Official Certificate
+              </button>
+            </div>
+            <div id="certificate-print-area" class="cert-frame">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="tag tag--red">MJS Karate Academy</span>
+                <span class="tag tag--blue">Kurunegala Smart Dojo</span>
+              </div>
+              <h3 style="font-size:1.75rem; text-transform:uppercase; letter-spacing:0.04em; margin-top:var(--space-sm);">
+                Certificate of Shotokan Achievement
+              </h3>
+              <p style="margin:0 auto; font-size:0.9375rem; color:var(--on-surface-variant);">
+                This certifies that the below-named Karateka has demonstrated technical proficiency, etiquette, and warrior spirit in accordance with Shotokan standards.
+              </p>
+              <div id="cert-student-name" style="font-family:var(--font-headline); font-size:2rem; font-weight:700; border-bottom:var(--border-thick); padding-bottom:var(--space-xs); margin-inline:auto; min-width:60%;">
+                Kavindu Perera
+              </div>
+              <div id="cert-award-line" style="font-family:var(--font-label); font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">
+                Official Kyu Rank Promotion — Blue Belt (5th Kyu)
+              </div>
+              <div id="cert-meta-line" style="font-size:0.875rem; color:var(--on-surface-variant);">
+                Index: MJS-101 • Awarded on 2026-11-24 at Kurunegala Headquarters
+              </div>
+              <div class="cert-sig-row">
+                <div>
+                  <div style="font-weight:700;">Sensei Jayasinghe Herath</div>
+                  <div style="font-size:0.8125rem; color:var(--on-surface-variant);">Chief Instructor • 5th Dan Black Belt</div>
+                </div>
+                <div>
+                  <div style="font-weight:700;">Ashinshani Menaka &amp; Dilshan Isuru</div>
+                  <div style="font-size:0.8125rem; color:var(--on-surface-variant);">Head Female &amp; Male Coaches</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: Applicant Approval Manager -->
+        <div id="staff-panel-approvals" class="staff-panel">
+          <div class="block block--white" style="display:grid; gap:var(--space-md);">
+            <h3>Public Online Registrations Awaiting Approval</h3>
+            <div id="approval-feedback" class="status-msg"></div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>App ID</th>
+                    <th>Applicant</th>
+                    <th>Division</th>
+                    <th>Guardian &amp; Phone</th>
+                    <th>Submitted</th>
+                    <th>Decision</th>
+                  </tr>
+                </thead>
+                <tbody id="approvals-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 1: OFFICIAL COVER BANNER & ACADEMY OVERVIEW (#about) -->
+    <section id="about" class="section-open section-open--red no-print" aria-labelledby="about-heading">
+      <div class="section-head-row">
+        <div>
+          <span class="kicker kicker--red">01 • Dojo Heritage &amp; Leadership Banner</span>
+          <h2 id="about-heading" style="margin-top: var(--space-sm);">
+            Built in Kurunegala on Traditional Shotokan Discipline and Smart Dojo Telemetry
+          </h2>
+        </div>
+        <p style="color: var(--on-surface-variant);">
+          Under Chief Instructor Sensei Jayasinghe Herath (5th Dan), MJS Karate Academy unites traditional Japanese etiquette with modern athlete tracking.
+        </p>
+      </div>
+
+      <!-- Official Academy Cover Banner SVG: Sensei center, Coaches on sides, Bowing students front, Shotokan Tiger BG, Japanese Flag, Red/Blue/White theme -->
+      <figure class="cover-banner-frame" style="margin:0;">
+        <svg class="cover-banner-svg" viewBox="0 0 1200 440" role="img" aria-label="MJS Karate Academy cover banner showing Sensei Jayasinghe Herath in center, Head Coaches Ashinshani Menaka and Dilshan Isuru on sides, bowing students in front, Shotokan Tiger crest, and Japanese Hinomaru flag">
+          <!-- Red / Blue / White Geometric Bauhaus Field -->
+          <rect x="0" y="0" width="1200" height="440" fill="var(--background)" />
+          <rect x="0" y="0" width="380" height="440" fill="var(--secondary)" />
+          <rect x="820" y="0" width="380" height="440" fill="var(--tertiary)" />
+          <rect x="380" y="0" width="440" height="440" fill="var(--background)" />
+          <line x1="380" y1="0" x2="380" y2="440" stroke="var(--outline)" stroke-width="6" />
+          <line x1="820" y1="0" x2="820" y2="440" stroke="var(--outline)" stroke-width="6" />
+
+          <!-- Shotokan Tiger Background Emblem (Center Circle) -->
+          <circle cx="600" cy="185" r="142" fill="var(--primary-container)" stroke="var(--outline)" stroke-width="6" />
+          <circle cx="600" cy="185" r="126" fill="none" stroke="var(--outline)" stroke-width="3" stroke-dasharray="10 6" />
+          <!-- Stylized Shotokan Tiger Head & Stripes -->
+          <path d="M530 165 Q565 110 600 125 Q635 110 670 165 Q682 215 642 248 Q600 270 558 248 Q518 215 530 165 Z" fill="var(--background)" stroke="var(--outline)" stroke-width="5" />
+          <path d="M542 135 L525 108 L560 124 Z" fill="var(--outline)" />
+          <path d="M658 135 L675 108 L640 124 Z" fill="var(--outline)" />
+          <path d="M555 155 L585 162 M645 155 L615 162 M568 140 L592 148 M632 140 L608 148" stroke="var(--outline)" stroke-width="5" stroke-linecap="square" />
+          <polygon points="590,192 610,192 600,208" fill="var(--secondary)" stroke="var(--outline)" stroke-width="2" />
+          <circle cx="574" cy="176" r="6" fill="var(--outline)" />
+          <circle cx="626" cy="176" r="6" fill="var(--outline)" />
+          <path d="M565 216 Q600 232 635 216" fill="none" stroke="var(--outline)" stroke-width="4" />
+
+          <!-- Japanese Flag (Hinomaru) Top Left inside Red/White Frame -->
+          <rect x="44" y="34" width="136" height="88" fill="var(--background)" stroke="var(--outline)" stroke-width="4" />
+          <circle cx="112" cy="78" r="26" fill="var(--secondary)" />
+          <text x="44" y="146" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="14" fill="var(--on-secondary)" letter-spacing="1">SHOTOKAN TRADITION</text>
+
+          <!-- Kurunegala Banner Badge Top Right -->
+          <rect x="964" y="34" width="192" height="44" fill="var(--primary-container)" stroke="var(--outline)" stroke-width="4" />
+          <text x="1060" y="62" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="15" fill="var(--on-primary-container)" letter-spacing="1">KURUNEGALA • LK</text>
+
+          <!-- Left Coach: Head Female Coach Ashinshani Menaka -->
+          <g transform="translate(260, 195)">
+            <rect x="-46" y="38" width="92" height="122" fill="var(--background)" stroke="var(--outline)" stroke-width="4" />
+            <rect x="-46" y="102" width="92" height="14" fill="var(--outline)" />
+            <circle cx="0" cy="8" r="26" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="4" />
+            <path d="M-24 2 Q0 -26 24 2" fill="var(--outline)" />
+            <rect x="-78" y="170" width="156" height="42" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+            <text x="0" y="188" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="var(--on-surface)">ASHINSHANI MENAKA</text>
+            <text x="0" y="204" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="11" fill="var(--tertiary)">Head Female Coach</text>
+          </g>
+
+          <!-- Center: Sensei Jayasinghe Herath (5th Dan) -->
+          <g transform="translate(600, 172)">
+            <rect x="-56" y="42" width="112" height="138" fill="var(--background)" stroke="var(--outline)" stroke-width="5" />
+            <line x1="0" y1="42" x2="-16" y2="108" stroke="var(--outline)" stroke-width="3" />
+            <rect x="-56" y="114" width="112" height="18" fill="var(--outline)" />
+            <!-- 5th Dan Gold Stripes -->
+            <rect x="20" y="116" width="4" height="14" fill="var(--primary-container)" />
+            <rect x="27" y="116" width="4" height="14" fill="var(--primary-container)" />
+            <rect x="34" y="116" width="4" height="14" fill="var(--primary-container)" />
+            <rect x="41" y="116" width="4" height="14" fill="var(--primary-container)" />
+            <rect x="48" y="116" width="4" height="14" fill="var(--primary-container)" />
+            <circle cx="0" cy="8" r="30" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="5" />
+            <rect x="-26" y="-8" width="52" height="10" fill="var(--secondary)" stroke="var(--outline)" stroke-width="2" />
+            <rect x="-118" y="188" width="236" height="48" fill="var(--primary-container)" stroke="var(--outline)" stroke-width="4" />
+            <text x="0" y="209" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="15" fill="var(--on-primary-container)">SENSEI JAYASINGHE HERATH</text>
+            <text x="0" y="227" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="12" fill="var(--on-primary-container)">5th Dan Black Belt • Chief Instructor</text>
+          </g>
+
+          <!-- Right Coach: Head Male Coach Dilshan Isuru -->
+          <g transform="translate(940, 195)">
+            <rect x="-46" y="38" width="92" height="122" fill="var(--background)" stroke="var(--outline)" stroke-width="4" />
+            <rect x="-46" y="102" width="92" height="14" fill="var(--outline)" />
+            <circle cx="0" cy="8" r="26" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="4" />
+            <path d="M-24 0 Q0 -24 24 0" fill="var(--outline)" />
+            <rect x="-78" y="170" width="156" height="42" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+            <text x="0" y="188" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="var(--on-surface)">DILSHAN ISURU</text>
+            <text x="0" y="204" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="11" fill="var(--tertiary)">Head Male Coach</text>
+          </g>
+
+          <!-- Front Row: Bowing Karateka Students (Rei) -->
+          <g transform="translate(0, 344)">
+            <rect x="0" y="70" width="1200" height="26" fill="var(--outline)" />
+            <text x="600" y="88" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-weight="700" font-size="13" fill="var(--primary-container)" letter-spacing="3">
+              REIGITSU • BOWING IN UNITY — OSS!
+            </text>
+            <!-- 6 Bowing Students -->
+            <g transform="translate(145, 0)">
+              <path d="M-22 65 L-18 20 L18 14 L24 65 Z" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+              <circle cx="26" cy="22" r="14" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="3" />
+              <rect x="-18" y="42" width="38" height="8" fill="var(--primary-container)" stroke="var(--outline)" stroke-width="2" />
+            </g>
+            <g transform="translate(325, 0)">
+              <path d="M-22 65 L-18 20 L18 14 L24 65 Z" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+              <circle cx="26" cy="22" r="14" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="3" />
+              <rect x="-18" y="42" width="38" height="8" fill="var(--tertiary)" stroke="var(--outline)" stroke-width="2" />
+            </g>
+            <g transform="translate(475, 0)">
+              <path d="M-22 65 L-18 20 L18 14 L24 65 Z" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+              <circle cx="26" cy="22" r="14" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="3" />
+              <rect x="-18" y="42" width="38" height="8" fill="var(--positive)" stroke="var(--outline)" stroke-width="2" />
+            </g>
+            <g transform="translate(725, 0)">
+              <path d="M-24 65 L-18 14 L18 20 L22 65 Z" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+              <circle cx="-26" cy="22" r="14" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="3" />
+              <rect x="-20" y="42" width="38" height="8" fill="var(--secondary)" stroke="var(--outline)" stroke-width="2" />
+            </g>
+            <g transform="translate(875, 0)">
+              <path d="M-24 65 L-18 14 L18 20 L22 65 Z" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+              <circle cx="-26" cy="22" r="14" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="3" />
+              <rect x="-20" y="42" width="38" height="8" fill="var(--tertiary)" stroke="var(--outline)" stroke-width="2" />
+            </g>
+            <g transform="translate(1055, 0)">
+              <path d="M-24 65 L-18 14 L18 20 L22 65 Z" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+              <circle cx="-26" cy="22" r="14" fill="var(--surface-container-high)" stroke="var(--outline)" stroke-width="3" />
+              <rect x="-20" y="42" width="38" height="8" fill="var(--primary-container)" stroke="var(--outline)" stroke-width="2" />
+            </g>
+          </g>
+        </svg>
+      </figure>
+
+      <!-- Key Dojo Metrics Row -->
+      <div class="figure-grid">
+        <div class="figure-card">
+          <div class="figure-label">Active Karatekas</div>
+          <div class="figure-val" id="stat-active-students">148</div>
+          <p style="font-size:0.875rem; color:var(--on-surface-variant);">Across Kids, Junior, and Senior Kumite squads</p>
+        </div>
+        <div class="figure-card" style="background:var(--primary-container);">
+          <div class="figure-label" style="color:var(--on-primary-container);">Chief Sensei Rank</div>
+          <div class="figure-val">5th Dan</div>
+          <p style="font-size:0.875rem;">Certified Shotokan Master Examiner</p>
+        </div>
+        <div class="figure-card">
+          <div class="figure-label">Tournament Medals (2024–2026)</div>
+          <div class="figure-val">94</div>
+          <p style="font-size:0.875rem; color:var(--on-surface-variant);">Provincial &amp; National Kata &amp; Kumite podiums</p>
+        </div>
+        <div class="figure-card">
+          <div class="figure-label">Smart Dojo Check-In</div>
+          <div class="figure-val">1.2s</div>
+          <p style="font-size:0.875rem; color:var(--on-surface-variant);">Instant QR &amp; automated parent SMS receipts</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: CLASS EXPERIENCE TIMELINE & VIDEO HUB (#training) -->
+    <section id="training" class="section-open no-print" aria-labelledby="training-heading">
+      <div class="section-head-row">
+        <div>
+          <span class="kicker kicker--blue">02 • Training Methodology &amp; Video Hub</span>
+          <h2 id="training-heading" style="margin-top: var(--space-sm);">
+            Inside a 75-Minute MJS Karate Class &amp; 3D Technique Breakdown
+          </h2>
+        </div>
+        <div class="timeline-controls">
+          <span class="figure-label">Track Focus:</span>
+          <button type="button" class="btn btn--sm btn--primary" data-track-mode="Kids" onclick="setTimelineTrack('Kids', this)">Kids (5–10)</button>
+          <button type="button" class="btn btn--sm" data-track-mode="Juniors" onclick="setTimelineTrack('Juniors', this)">Juniors (11–16)</button>
+          <button type="button" class="btn btn--sm" data-track-mode="Elite" onclick="setTimelineTrack('Elite', this)">Elite Kumite</button>
+        </div>
+      </div>
+
+      <!-- Interactive 6-Phase Class Timeline -->
+      <div class="timeline-track" role="tablist" aria-label="Class Experience Phases">
+        <button type="button" class="timeline-step is-active" onclick="selectTimelinePhase(0)">
+          <span class="step-num">01 • 00–05m</span>
+          <strong>Seiza &amp; Mokuso</strong>
+          <span style="font-size:0.875rem;">Opening bow &amp; breath focus</span>
+        </button>
+        <button type="button" class="timeline-step" onclick="selectTimelinePhase(1)">
+          <span class="step-num">02 • 05–18m</span>
+          <strong>Jumbi Undo</strong>
+          <span style="font-size:0.875rem;">Agility &amp; joint mobility</span>
+        </button>
+        <button type="button" class="timeline-step" onclick="selectTimelinePhase(2)">
+          <span class="step-num">03 • 18–38m</span>
+          <strong>Kihon Drills</strong>
+          <span style="font-size:0.875rem;">Stances, punches &amp; kicks</span>
+        </button>
+        <button type="button" class="timeline-step" onclick="selectTimelinePhase(3)">
+          <span class="step-num">04 • 38–55m</span>
+          <strong>Kata Sequence</strong>
+          <span style="font-size:0.875rem;">Heian &amp; Black Belt forms</span>
+        </button>
+        <button type="button" class="timeline-step" onclick="selectTimelinePhase(4)">
+          <span class="step-num">05 • 55–70m</span>
+          <strong>Kumite Sparring</strong>
+          <span style="font-size:0.875rem;">Controlled timing &amp; defense</span>
+        </button>
+        <button type="button" class="timeline-step" onclick="selectTimelinePhase(5)">
+          <span class="step-num">06 • 70–75m</span>
+          <strong>Dojo Kun &amp; Rei</strong>
+          <span style="font-size:0.875rem;">Character pledge &amp; dismissal</span>
+        </button>
+      </div>
+
+      <div id="timeline-detail-card" class="block block--white asymmetric-2-1">
+        <div style="display:grid; gap:var(--space-sm);">
+          <span id="phase-kicker" class="tag tag--blue" style="width:fit-content;">Phase 01 • Kids (5–10)</span>
+          <h3 id="phase-title" style="font-size:var(--subhead-size);">Seiza &amp; Mokuso — Centering the Mind Before Movement</h3>
+          <p id="phase-desc">
+            Students line up by belt rank facing the Kamidana, kneel in Seiza, and close their eyes for 60 seconds of calm breathing before bowing to Sensei Jayasinghe Herath with a unified OSS!
+          </p>
+        </div>
+        <div class="block block--yellow" style="padding:var(--space-md);">
+          <div class="figure-label" style="color:var(--on-primary-container);">Coach Checkpoint</div>
+          <p id="phase-checkpoint" style="margin-top:var(--space-xs); font-weight:600;">
+            Posture upright, shoulders relaxed, eyes locked straight ahead on the Shotokan crest.
+          </p>
+        </div>
+      </div>
+
+      <!-- Video Hub: Self-Contained Interactive Technique Animator -->
+      <div class="asymmetric-2-1" style="margin-top:var(--space-md);">
+        <div class="block block--white" style="display:grid; gap:var(--space-md);">
+          <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:var(--space-sm);">
+            <div>
+              <span class="kicker kicker--red">MJS Video Hub</span>
+              <h3 id="video-hub-title" style="margin-top:var(--space-xs);">Mawashi-Geri (Roundhouse High Kick)</h3>
+            </div>
+            <div style="display:flex; gap:var(--space-xs);">
+              <button type="button" class="btn btn--sm btn--primary" onclick="toggleVideoPlay()" id="video-play-btn">Pause</button>
+              <button type="button" class="btn btn--sm" onclick="toggleVideoSpeed()" id="video-speed-btn">1.0x Speed</button>
+            </div>
+          </div>
+          <canvas id="technique-canvas" class="technique-canvas" aria-label="Animated karate technique player"></canvas>
+          <p id="video-hub-notes" style="font-size:0.9375rem; color:var(--on-surface-variant);">
+            Lead Coach Dilshan Isuru demonstrates hip chamber pivot, supporting heel rotation, and snapping instep strike with rapid recoil.
+          </p>
+        </div>
+
+        <div class="block block--white" style="display:grid; gap:var(--space-sm);">
+          <h3>Select Technique Reel</h3>
+          <button type="button" class="btn btn--primary" style="justify-content:flex-start;" onclick="selectTechniqueVideo('mawashi', this)">
+            01 • Mawashi-Geri High Kick
+          </button>
+          <button type="button" class="btn" style="justify-content:flex-start;" onclick="selectTechniqueVideo('gyaku', this)">
+            02 • Gyaku-Zuki Reverse Punch
+          </button>
+          <button type="button" class="btn" style="justify-content:flex-start;" onclick="selectTechniqueVideo('heian', this)">
+            03 • Heian Shodan Kata Flow
+          </button>
+          <button type="button" class="btn" style="justify-content:flex-start;" onclick="selectTechniqueVideo('kumite', this)">
+            04 • Kumite Blitz Footwork
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: WEEKLY SCHEDULE (#schedule) -->
+    <section id="schedule" class="section-open section-open--yellow no-print" aria-labelledby="schedule-heading">
+      <div class="section-head-row">
+        <div>
+          <span class="kicker kicker--yellow">03 • Kurunegala Weekly Timetable</span>
+          <h2 id="schedule-heading" style="margin-top: var(--space-sm);">
+            Six-Day Training Schedule Across All Belt Divisions
+          </h2>
+        </div>
+        <div class="timeline-controls">
+          <button type="button" class="btn btn--sm btn--primary" onclick="filterSchedule('ALL', this)">All Classes</button>
+          <button type="button" class="btn btn--sm" onclick="filterSchedule('Kids', this)">Kids</button>
+          <button type="button" class="btn btn--sm" onclick="filterSchedule('Juniors', this)">Juniors</button>
+          <button type="button" class="btn btn--sm" onclick="filterSchedule('Seniors', this)">Seniors &amp; Elite</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Day</th>
+              <th>Time</th>
+              <th>Class Session</th>
+              <th>Division</th>
+              <th>Lead Instructor</th>
+              <th>Mat Hall</th>
+            </tr>
+          </thead>
+          <tbody id="public-schedule-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION 4: INSTRUCTORS & ACHIEVEMENTS (#team & #achievements) -->
+    <section id="team" class="section-open section-open--black no-print" aria-labelledby="team-heading">
+      <div class="section-head-row">
+        <div>
+          <span class="kicker">04 • Sensei, Coaches &amp; Championships</span>
+          <h2 id="team-heading" style="margin-top: var(--space-sm);">
+            Led by Three Black Belt Specialists Shaping Kurunegala Champions
+          </h2>
+        </div>
+        <p style="color: var(--on-surface-variant);">
+          Every session pairs traditional Shotokan mastery with dedicated male and female division mentorship.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="block block--yellow">
+          <span class="tag tag--dark">Chief Instructor</span>
+          <h3 style="margin-top:var(--space-sm); font-size:1.375rem;">Sensei Jayasinghe Herath</h3>
+          <div class="figure-label" style="margin-top:var(--space-xs); color:var(--on-primary-container);">5th Dan Black Belt • Founder</div>
+          <p style="margin-top:var(--space-sm); font-size:0.9375rem;">
+            Over 24 years of Shotokan instruction in North Western Province. Chief grading examiner overseeing Kyu &amp; Dan promotions and kata precision.
+          </p>
+        </article>
+
+        <article class="block block--white">
+          <span class="tag tag--blue">Women &amp; Junior Lead</span>
+          <h3 style="margin-top:var(--space-sm); font-size:1.375rem;">Ashinshani Menaka</h3>
+          <div class="figure-label" style="margin-top:var(--space-xs);">Head Female Coach • National Medalist</div>
+          <p style="margin-top:var(--space-sm); font-size:0.9375rem;">
+            Specializes in Kata artistry, flexible high-kick mechanics, and building confident young female athletes from White Belt to Black Belt.
+          </p>
+        </article>
+
+        <article class="block block--blue">
+          <span class="tag">Kumite &amp; Conditioning</span>
+          <h3 style="margin-top:var(--space-sm); font-size:1.375rem;">Dilshan Isuru</h3>
+          <div class="figure-label" style="margin-top:var(--space-xs); color:var(--on-tertiary);">Head Male Coach • Senior Kumite</div>
+          <p style="margin-top:var(--space-sm); font-size:0.9375rem;">
+            Directs tournament kumite tactics, reaction speed drills, and board-breaking power conditioning for regional and national competitions.
+          </p>
+        </article>
+      </div>
+
+      <!-- Achievements + Chart -->
+      <div id="achievements" class="asymmetric-2-1" style="margin-top:var(--space-md);">
+        <div class="block block--white" style="display:grid; gap:var(--space-md);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:var(--space-sm);">
+            <h3>Tournament Medal Growth (2022–2026)</h3>
+            <span class="tag tag--red">Gold / Silver / Bronze</span>
+          </div>
+          <div class="chart-box">
+            <canvas id="medals-chart" aria-label="Bar chart showing MJS Karate Academy medal growth from 2022 to 2026"></canvas>
+          </div>
+        </div>
+        <div class="block block--white" style="display:grid; gap:var(--space-md);">
+          <h3>Recent Honours</h3>
+          <div style="display:grid; gap:var(--space-sm);">
+            <div style="border-left:4px solid var(--secondary); padding-left:var(--space-sm);">
+              <strong>2026 North Western Open</strong>
+              <div style="font-size:0.875rem; color:var(--on-surface-variant);">Overall Dojo Trophy • 14 Gold, 9 Silver</div>
+            </div>
+            <div style="border-left:4px solid var(--tertiary); padding-left:var(--space-sm);">
+              <strong>2025 All-Island Schools Karate</strong>
+              <div style="font-size:0.875rem; color:var(--on-surface-variant);">U-16 Boys &amp; Girls Team Kata Champions</div>
+            </div>
+            <div style="border-left:4px solid var(--primary-container); padding-left:var(--space-sm);">
+              <strong>2024 National Shotokan Cup</strong>
+              <div style="font-size:0.875rem; color:var(--on-surface-variant);">8 Senior Kumite Podium Finishes</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: PUBLIC ONLINE STUDENT REGISTRATION FORM + INSTANT PRINTABLE SLIP (#join) -->
+    <section id="join" class="section-open section-open--red" aria-labelledby="join-heading">
+      <div class="section-head-row no-print">
+        <div>
+          <span class="kicker kicker--red">05 • Public Student Enrollment</span>
+          <h2 id="join-heading" style="margin-top: var(--space-sm);">
+            Register Online &amp; Generate Your Instant Dojo Admission Slip
+          </h2>
+        </div>
+        <p style="color: var(--on-surface-variant);">
+          Applications flow directly into the Sensei Approval Queue inside the Staff Portal and produce a printable slip for your first Kurunegala class.
+        </p>
+      </div>
+
+      <div class="asymmetric-1-2">
+        <!-- Registration Form -->
+        <form id="public-join-form" class="block block--white no-print" onsubmit="submitPublicRegistration(event)" style="display:grid; gap:var(--space-md);">
+          <h3>Student Application</h3>
+          <div class="field">
+            <label for="reg-name">Student Full Name</label>
+            <input type="text" id="reg-name" required placeholder="e.g. Nethmi Rajapaksha">
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="reg-age">Age (Years)</label>
+              <input type="number" id="reg-age" min="4" max="65" required placeholder="10">
+            </div>
+            <div class="field">
+              <label for="reg-division">Class Division</label>
+              <select id="reg-division" required>
+                <option value="Kids (5–10 yrs)">Kids (5–10 yrs)</option>
+                <option value="Juniors (11–16 yrs)">Juniors (11–16 yrs)</option>
+                <option value="Seniors &amp; Kumite">Seniors &amp; Kumite</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="reg-guardian">Parent / Guardian Name</label>
+            <input type="text" id="reg-guardian" required placeholder="Guardian Full Name">
+          </div>
+          <div class="field">
+            <label for="reg-phone">Parent WhatsApp / SMS Number</label>
+            <input type="tel" id="reg-phone" required placeholder="077-1234567">
+          </div>
+          <div class="field">
+            <label for="reg-exp">Prior Karate Experience</label>
+            <select id="reg-exp">
+              <option value="Beginner (No prior training)">Beginner (No prior training)</option>
+              <option value="Colored Belt Transfer">Colored Belt Transfer</option>
+              <option value="Black Belt / Dan">Black Belt / Dan</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn--primary">Generate Admission Slip &amp; Submit</button>
+          <div id="reg-status-msg" class="status-msg"></div>
+        </form>
+
+        <!-- Instant Printable Slip -->
+        <div id="printable-slip-card" class="slip-card">
+          <div class="slip-header">
+            <div>
+              <span class="tag tag--blue">MJS Smart Dojo • Kurunegala</span>
+              <h3 style="margin-top:var(--space-xs);">Student Admission &amp; Trial Slip</h3>
+            </div>
+            <div id="slip-app-id" style="font-family:var(--font-headline); font-weight:700; font-size:1.25rem; background:var(--primary-container); padding:var(--space-xs) var(--space-sm); border:var(--border-medium);">
+              MJS-APP-DEMO
+            </div>
+          </div>
+
+          <div class="card-grid" style="gap:var(--space-md);">
+            <div>
+              <div class="figure-label">Applicant Name</div>
+              <div id="slip-name" style="font-weight:700; font-size:1.125rem;">Submit form to generate slip</div>
+            </div>
+            <div>
+              <div class="figure-label">Assigned Division</div>
+              <div id="slip-division" style="font-weight:700;">—</div>
+            </div>
+            <div>
+              <div class="figure-label">Guardian &amp; SMS Contact</div>
+              <div id="slip-guardian" style="font-weight:600;">—</div>
+            </div>
+            <div>
+              <div class="figure-label">Submission Date &amp; Venue</div>
+              <div id="slip-date" style="font-weight:600;">Kurunegala Main Hall</div>
+            </div>
+          </div>
+
+          <!-- Crisp Inline Vector QR Matrix Badge -->
+          <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:var(--space-md); border-top:var(--border-medium); padding-top:var(--space-md);">
+            <div style="display:flex; align-items:center; gap:var(--space-md);">
+              <svg width="68" height="68" viewBox="0 0 68 68" aria-label="Application QR Check-In Matrix">
+                <rect x="0" y="0" width="68" height="68" fill="var(--background)" stroke="var(--outline)" stroke-width="3" />
+                <rect x="8" y="8" width="16" height="16" fill="var(--outline)" />
+                <rect x="44" y="8" width="16" height="16" fill="var(--outline)" />
+                <rect x="8" y="44" width="16" height="16" fill="var(--outline)" />
+                <rect x="30" y="14" width="8" height="8" fill="var(--secondary)" />
+                <rect x="28" y="28" width="12" height="12" fill="var(--tertiary)" />
+                <rect x="44" y="34" width="8" height="8" fill="var(--outline)" />
+                <rect x="34" y="46" width="12" height="12" fill="var(--outline)" />
+                <rect x="50" y="50" width="8" height="8" fill="var(--primary-container)" />
+              </svg>
+              <div style="font-size:0.875rem; color:var(--on-surface-variant);">
+                Bring this slip to <strong>Sensei Jayasinghe Herath</strong> at the Kurunegala Dojo Gate Desk for instant QR check-in.
+              </div>
+            </div>
+            <div class="no-print" style="display:flex; gap:var(--space-sm);">
+              <button type="button" class="btn btn--sm btn--primary" onclick="printAdmissionSlip()">Print Slip</button>
+              <button type="button" class="btn btn--sm" onclick="downloadAdmissionSlip()">Download TXT</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer no-print">
+    <div>
+      <strong>MJS Karate Academy — MJS Smart Dojo</strong>
+      <div style="font-size:0.875rem; color:var(--on-surface-variant);">
+        Kurunegala Headquarters • Sensei Jayasinghe Herath (5th Dan), Ashinshani Menaka, Dilshan Isuru
+      </div>
+    </div>
+    <div style="display:flex; gap:var(--space-sm); align-items:center;">
+      <span class="tag tag--blue">Shotokan Karate</span>
+      <button type="button" class="btn btn--sm" onclick="toggleStaffLockPanel()">Staff Portal Access</button>
+    </div>
+  </footer>
+
+  <api-shim></api-shim>
+  <script>
+    // =========================================================================
+    // 1. STATE & GROUNDED SEED DATA (Persisted via window.notebookAppApi)
+    // =========================================================================
+    var DEFAULT_STATE = {
+      students: [
+        {
+          index: `MJS-101`,
+          name: `Kavindu Perera`,
+          phone: `077-4128890`,
+          belt: `Blue Belt (5th Kyu)`,
+          track: `Juniors (11–16 yrs)`,
+          sessions: 22,
+          feeStatus: `Paid`,
+          feeAmount: 2500
+        },
+        {
+          index: `MJS-102`,
+          name: `Thisuri Bandara`,
+          phone: `071-8892341`,
+          belt: `Green Belt (6th Kyu)`,
+          track: `Kids (5–10 yrs)`,
+          sessions: 18,
+          feeStatus: `Pending`,
+          feeAmount: 2500
+        },
+        {
+          index: `MJS-103`,
+          name: `Sithum Wijesinghe`,
+          phone: `076-5501129`,
+          belt: `Brown Belt (1st Kyu)`,
+          track: `Seniors & Kumite`,
+          sessions: 31,
+          feeStatus: `Paid`,
+          feeAmount: 3000
+        },
+        {
+          index: `MJS-104`,
+          name: `Hasini Dissanayake`,
+          phone: `077-9043312`,
+          belt: `Yellow Belt (8th Kyu)`,
+          track: `Kids (5–10 yrs)`,
+          sessions: 12,
+          feeStatus: `Overdue`,
+          feeAmount: 2500
+        }
+      ],
+      attendanceLog: [
+        { time: `17:32`, index: `MJS-101`, name: `Kavindu Perera`, session: `Evening Shotokan Kihon`, total: 22 },
+        { time: `17:28`, index: `MJS-103`, name: `Sithum Wijesinghe`, session: `Elite Kumite Squad`, total: 31 }
+      ],
+      smsLog: [
+        { time: `17:32`, to: `077-4128890`, text: `MJS Smart Dojo: Kavindu Perera (MJS-101) checked in at Kurunegala Mat.` },
+        { time: `10:15`, to: `076-5501129`, text: `MJS Smart Dojo: November fee LKR 3,000 received for Sithum Wijesinghe. OSS!` }
+      ],
+      pendingApplicants: [
+        {
+          appId: `MJS-APP-2026-019`,
+          name: `Dilantha Jayakody`,
+          age: 9,
+          division: `Kids (5–10 yrs)`,
+          guardian: `Priyantha Jayakody`,
+          phone: `077-3194420`,
+          exp: `Beginner (No prior training)`,
+          date: `2026-11-23`
+        },
+        {
+          appId: `MJS-APP-2026-020`,
+          name: `Amaya Senanayake`,
+          age: 14,
+          division: `Juniors (11–16 yrs)`,
+          guardian: `Kumari Senanayake`,
+          phone: `071-6642218`,
+          exp: `Colored Belt Transfer`,
+          date: `2026-11-24`
+        }
+      ],
+      lastAdmissionSlip: null
+    };
+
+    var appState = JSON.parse(JSON.stringify(DEFAULT_STATE));
+    var staffUnlocked = false;
+    var soundEnabled = true;
+
+    var SCHEDULE_ROWS = [
+      { day: `Monday`, time: `16:00 – 17:15`, title: `Kids Foundation Kihon`, division: `Kids`, coach: `Ashinshani Menaka`, mat: `Mat A` },
+      { day: `Monday`, time: `17:30 – 19:00`, title: `Junior Shotokan Kata`, division: `Juniors`, coach: `Sensei Jayasinghe Herath`, mat: `Main Hall` },
+      { day: `Tuesday`, time: `17:30 – 19:15`, title: `Senior Kumite Tactics`, division: `Seniors`, coach: `Dilshan Isuru`, mat: `Competition Mat` },
+      { day: `Wednesday`, time: `16:00 – 17:15`, title: `Kids Balance & Board Drills`, division: `Kids`, coach: `Ashinshani Menaka`, mat: `Mat A` },
+      { day: `Thursday`, time: `17:30 – 19:00`, title: `Junior & Senior Bunkai`, division: `Juniors`, coach: `Sensei Jayasinghe Herath`, mat: `Main Hall` },
+      { day: `Friday`, time: `18:00 – 19:30`, title: `Elite Sparring & Conditioning`, division: `Seniors`, coach: `Dilshan Isuru`, mat: `Competition Mat` },
+      { day: `Saturday`, time: `08:30 – 10:30`, title: `All-Belt Grading Prep & Kata`, division: `All`, coach: `Sensei Jayasinghe Herath`, mat: `Main Hall` }
+    ];
+
+    var TIMELINE_PHASES = [
+      {
+        title: `Seiza & Mokuso — Centering the Mind Before Movement`,
+        desc: `Students line up by belt rank facing the Kamidana, kneel in Seiza, and perform 60 seconds of calm breathing before bowing to Sensei Jayasinghe Herath with a unified OSS!`,
+        checkpoints: {
+          Kids: `Hands resting cleanly on thighs, back straight, zero fidgeting for 30 quiet seconds.`,
+          Juniors: `Abdominal breath cadence (4s in, 6s out) before opening commands.`,
+          Elite: `Visualizing kumite opening timing and mental composure under pressure.`
+        }
+      },
+      {
+        title: `Jumbi Undo — Dynamic Mobility & Footwork Activation`,
+        desc: `Head Coaches Ashinshani Menaka and Dilshan Isuru lead progressive joint rotations, fast-feet ladder reactions, and hip-flexor opening sequences.`,
+        checkpoints: {
+          Kids: `Bear crawls, animal balance hops, and coordinated left/right agility cones.`,
+          Juniors: `Rapid stance transitions between Zenkutsu-dachi and Kokutsu-dachi.`,
+          Elite: `Plyometric split-step bursts and partner reaction mirror drills.`
+        }
+      },
+      {
+        title: `Kihon Drills — Core Stances, Strikes & High Kicks`,
+        desc: `Repetitive precision lines across the tatami building hip snap, bone alignment, and balance through Choku-zuki, Age-uke, and Mawashi-geri.`,
+        checkpoints: {
+          Kids: `Clean guard hands up by the chin and sharp kiai on every fifth count.`,
+          Juniors: `Full hip rotation on Gyaku-zuki and chamber height above the belt.`,
+          Elite: `Double-kick feints and explosive forward drive without telegraphing.`
+        }
+      },
+      {
+        title: `Kata Sequence — Preserving Shotokan Form & Rhythm`,
+        desc: `From Taikyoku Shodan to Heian Godan and Bassai Dai, students execute traditional defensive combinations with exact tempo shifts and kime.`,
+        checkpoints: {
+          Kids: `Memorizing the 20-step I-pattern of Taikyoku Shodan with sharp turns.`,
+          Juniors: `Heian Nidan & Sandan rhythm contrast between slow tension and snap.`,
+          Elite: `Competition-grade Bassai Dai & Jion kime timing under Sensei review.`
+        }
+      },
+      {
+        title: `Kumite Sparring — Controlled Speed, Distance & Respect`,
+        desc: `Partner drills progressing from Gohon Kumite (five-step) to free-style WKF point sparring with strict control and instant target recovery.`,
+        checkpoints: {
+          Kids: `Non-contact target pads and distance-judging tag footwork.`,
+          Juniors: `Structured Ippon Kumite counters with clean zanshin awareness.`,
+          Elite: `Full-speed tournament rounds scored by Head Male Coach Dilshan Isuru.`
+        }
+      },
+      {
+        title: `Dojo Kun & Rei — Reciting the Five Maxims of Character`,
+        desc: `Class closes in Seiza reciting the Shotokan Dojo Kun: seek perfection of character, be faithful, endeavor, respect others, refrain from violent behavior.`,
+        checkpoints: {
+          Kids: `Clear group recitation of respect and effort maxims before bowing out.`,
+          Juniors: `Belt tie inspection and peer handshake across mat lines.`,
+          Elite: `Post-session recovery notes and upcoming tournament weight/kata check.`
+        }
+      }
+    ];
+    var currentTrackMode = `Kids`;
+    var currentPhaseIndex = 0;
+
+    var BELT_ORDER = [
+      `White Belt (10th Kyu)`,
+      `Yellow Belt (8th Kyu)`,
+      `Orange Belt (7th Kyu)`,
+      `Green Belt (6th Kyu)`,
+      `Blue Belt (5th Kyu)`,
+      `Brown Belt (1st Kyu)`,
+      `Black Belt (1st Dan)`
+    ];
+
+    // =========================================================================
+    // 2. AUDIO SYNTHESIZER (Pure Web Audio API, zero external files)
+    // =========================================================================
+    var audioCtx = null;
+    function playDojoImpactSound(type) {
+      if (!soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          var Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) return;
+          audioCtx = new Ctx();
+        }
+        if (audioCtx.state === `suspended`) audioCtx.resume();
+        var now = audioCtx.currentTime;
+        var osc = audioCtx.createOscillator();
+        var gain = audioCtx.createGain();
+        if (type === `break`) {
+          osc.type = `triangle`;
+          osc.frequency.setValueAtTime(220, now);
+          osc.frequency.exponentialRampToValueAtTime(52, now + 0.18);
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        } else if (type === `oss`) {
+          osc.type = `sawtooth`;
+          osc.frequency.setValueAtTime(160, now);
+          osc.frequency.exponentialRampToValueAtTime(95, now + 0.25);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+        } else {
+          osc.type = `sine`;
+          osc.frequency.setValueAtTime(130, now);
+          osc.frequency.exponentialRampToValueAtTime(48, now + 0.14);
+          gain.gain.setValueAtTime(0.25, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+        }
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } catch (e) {}
+    }
+
+    function toggleDojoSound() {
+      soundEnabled = !soundEnabled;
+      var btn = document.getElementById(`sound-toggle-btn`);
+      if (btn) btn.textContent = soundEnabled ? `Audio: On` : `Audio: Off`;
+    }
+
+    // =========================================================================
+    // 3. THREE.JS 3D DOJO SCENE & 5-STEP TIKTOK ENTRANCE SEQUENCE
+    // =========================================================================
+    var threeScene, threeCamera, threeRenderer, threeClock;
+    var senseiGroup, femaleCoachGroup, maleCoachGroup;
+    var studentModels = [];
+    var boardMeshes = [];
+    var splinters = [];
+    var shockwaves = [];
+    var entranceState = {
+      step: 1,
+      timer: 0,
+      skipped: false,
+      activeBoardAction: null,
+      actionTimer: 0
+    };
+    var entranceTimeouts = [];
+
+    function readCssToken(name, fallback) {
+      var val = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+      return val || fallback;
+    }
+
+    function makeBoardTexture(label, accentColor, subText) {
+      var c = document.createElement(`canvas`);
+      c.width = 512;
+      c.height = 256;
+      var ctx = c.getContext(`2d`);
+      ctx.fillStyle = `#F4D5A6`;
+      ctx.fillRect(0, 0, 512, 256);
+      ctx.strokeStyle = `#141414`;
+      ctx.lineWidth = 14;
+      ctx.strokeRect(10, 10, 492, 236);
+      ctx.fillStyle = accentColor;
+      ctx.fillRect(17, 17, 478, 54);
+      ctx.fillStyle = `#141414`;
+      ctx.font = `bold 64px "Space Grotesk", sans-serif`;
+      ctx.textAlign = `center`;
+      ctx.textBaseline = `middle`;
+      ctx.fillText(label.toUpperCase(), 256, 138);
+      ctx.font = `bold 24px "Space Grotesk", sans-serif`;
+      ctx.fillStyle = `#444444`;
+      ctx.fillText(subText, 256, 205);
+      var tex = new THREE.CanvasTexture(c);
+      tex.needsUpdate = true;
+      return tex;
+    }
+
+    function buildKaratekaMesh(beltColorHex, scaleVal, withGoldStripes) {
+      var root = new THREE.Group();
+      var giMat = new THREE.MeshStandardMaterial({ color: 0xFFFFFF, roughness: 0.65 });
+      var skinMat = new THREE.MeshStandardMaterial({ color: 0xD9A782, roughness: 0.7 });
+      var hairMat = new THREE.MeshStandardMaterial({ color: 0x161616, roughness: 0.8 });
+      var beltMat = new THREE.MeshStandardMaterial({ color: beltColorHex, roughness: 0.5 });
+
+      var hipPivot = new THREE.Group();
+      hipPivot.position.y = 0.85;
+      root.add(hipPivot);
+
+      var torsoPivot = new THREE.Group();
+      hipPivot.add(torsoPivot);
+
+      var torso = new THREE.Mesh(new THREE.BoxGeometry(0.54, 0.72, 0.3), giMat);
+      torso.position.y = 0.36;
+      torso.castShadow = true;
+      torsoPivot.add(torso);
+
+      var belt = new THREE.Mesh(new THREE.BoxGeometry(0.57, 0.1, 0.33), beltMat);
+      belt.position.y = 0.08;
+      torsoPivot.add(belt);
+
+      if (withGoldStripes) {
+        var stripeMat = new THREE.MeshStandardMaterial({ color: 0xFFB703, roughness: 0.3 });
+        for (var s = 0; s < 5; s++) {
+          var st = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.11, 0.34), stripeMat);
+          st.position.set(0.08 + s * 0.04, 0.08, 0);
+          torsoPivot.add(st);
+        }
+      }
+
+      var head = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 16), skinMat);
+      head.position.y = 0.92;
+      torsoPivot.add(head);
+
+      var hair = new THREE.Mesh(new THREE.SphereGeometry(0.205, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
+      hair.position.y = 0.94;
+      torsoPivot.add(hair);
+
+      var leftArmPivot = new THREE.Group();
+      leftArmPivot.position.set(-0.36, 0.64, 0);
+      var leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.56, 0.16), giMat);
+      leftArm.position.y = -0.24;
+      leftArmPivot.add(leftArm);
+      torsoPivot.add(leftArmPivot);
+
+      var rightArmPivot = new THREE.Group();
+      rightArmPivot.position.set(0.36, 0.64, 0);
+      var rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.56, 0.16), giMat);
+      rightArm.position.y = -0.24;
+      rightArmPivot.add(rightArm);
+      torsoPivot.add(rightArmPivot);
+
+      var leftLegPivot = new THREE.Group();
+      leftLegPivot.position.set(-0.15, 0.85, 0);
+      var leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.82, 0.2), giMat);
+      leftLeg.position.y = -0.41;
+      leftLegPivot.add(leftLeg);
+      root.add(leftLegPivot);
+
+      var rightLegPivot = new THREE.Group();
+      rightLegPivot.position.set(0.15, 0.85, 0);
+      var rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.82, 0.2), giMat);
+      rightLeg.position.y = -0.41;
+      rightLegPivot.add(rightLeg);
+      root.add(rightLegPivot);
+
+      root.scale.setScalar(scaleVal);
+      root.userData = {
+        torsoPivot: torsoPivot,
+        leftArmPivot: leftArmPivot,
+        rightArmPivot: rightArmPivot,
+        leftLegPivot: leftLegPivot,
+        rightLegPivot: rightLegPivot
+      };
+      return root;
+    }
+
+    function drawFallback2DDojo(canvas) {
+      var ctx = canvas.getContext(`2d`);
+      if (!ctx) return;
+      var w = canvas.width = canvas.clientWidth || 900;
+      var h = canvas.height = canvas.clientHeight || 520;
+      ctx.fillStyle = readCssToken(`--surface-dark`, `#141414`);
+      ctx.fillRect(0, 0, w, h);
+      ctx.fillStyle = readCssToken(`--tertiary`, `#0077B6`);
+      ctx.fillRect(w * 0.1, h * 0.65, w * 0.8, h * 0.25);
+      ctx.fillStyle = readCssToken(`--primary-container`, `#FFB703`);
+      ctx.beginPath();
+      ctx.arc(w * 0.5, h * 0.34, 48, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = readCssToken(`--background`, `#FFFFFF`);
+      ctx.font = `bold 20px "Space Grotesk", sans-serif`;
+      ctx.textAlign = `center`;
+      ctx.fillText(`MJS SMART DOJO — SENSEI JAYASINGHE HERATH (5TH DAN)`, w * 0.5, h * 0.54);
+      ctx.fillText(`CLICK ANY BOARD BUTTON BELOW TO EXECUTE KARATE TECHNIQUE`, w * 0.5, h * 0.62);
+    }
+
+    function init3DDojo() {
+      var canvas = document.getElementById(`dojo-3d-canvas`);
+      if (!canvas) {
+        startEntranceSequence();
+        return;
+      }
+      if (typeof THREE === `undefined`) {
+        drawFallback2DDojo(canvas);
+        startEntranceSequence();
+        return;
+      }
+
+      try {
+        threeRenderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+      } catch (e) {
+        drawFallback2DDojo(canvas);
+        startEntranceSequence();
+        return;
+      }
+
+      threeScene = new THREE.Scene();
+      threeScene.background = new THREE.Color(0x161618);
+      threeScene.fog = new THREE.Fog(0x161618, 12, 34);
+
+      var width = canvas.clientWidth || 900;
+      var height = canvas.clientHeight || 520;
+      threeCamera = new THREE.PerspectiveCamera(48, width / height, 0.1, 60);
+      threeCamera.position.set(0, 2.2, 8.8);
+
+      threeRenderer.setSize(width, height, false);
+      threeRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      threeClock = new THREE.Clock();
+
+      // Floodlight Stadium-Style Dojo Illumination
+      threeScene.add(new THREE.AmbientLight(0xFFFFFF, 0.68));
+      var keyLight = new THREE.DirectionalLight(0xFFF6E0, 1.35);
+      keyLight.position.set(4, 9, 6);
+      threeScene.add(keyLight);
+
+      var redSpot = new THREE.SpotLight(0xD90429, 2.4, 24, Math.PI / 4);
+      redSpot.position.set(-5.5, 6.5, 2);
+      threeScene.add(redSpot);
+
+      var blueSpot = new THREE.SpotLight(0x0077B6, 2.4, 24, Math.PI / 4);
+      blueSpot.position.set(5.5, 6.5, 2);
+      threeScene.add(blueSpot);
+
+      // Dojo Timber Mat Floor + Tournament Ring
+      var floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(24, 24),
+        new THREE.MeshStandardMaterial({ color: 0xD8B486, roughness: 0.75 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      threeScene.add(floor);
+
+      var matBorderRed = new THREE.Mesh(
+        new THREE.RingGeometry(4.6, 4.95, 4),
+        new THREE.MeshBasicMaterial({ color: 0xD90429, side: THREE.DoubleSide })
+      );
+      matBorderRed.rotation.x = -Math.PI / 2;
+      matBorderRed.rotation.z = Math.PI / 4;
+      matBorderRed.position.y = 0.01;
+      threeScene.add(matBorderRed);
+
+      var matCenterBlue = new THREE.Mesh(
+        new THREE.CircleGeometry(1.75, 32),
+        new THREE.MeshBasicMaterial({ color: 0x0077B6 })
+      );
+      matCenterBlue.rotation.x = -Math.PI / 2;
+      matCenterBlue.position.y = 0.012;
+      threeScene.add(matCenterBlue);
+
+      // Kamidana Back Wall & Banners
+      var backWall = new THREE.Mesh(
+        new THREE.BoxGeometry(20, 7, 0.3),
+        new THREE.MeshStandardMaterial({ color: 0x222226, roughness: 0.85 })
+      );
+      backWall.position.set(0, 3.5, -5.8);
+      threeScene.add(backWall);
+
+      // Japanese Hinomaru Flag on Back Wall
+      var jpFlagBg = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.6, 1.7),
+        new THREE.MeshBasicMaterial({ color: 0xFFFFFF })
+      );
+      jpFlagBg.position.set(-4.5, 3.8, -5.6);
+      threeScene.add(jpFlagBg);
+      var jpFlagSun = new THREE.Mesh(
+        new THREE.CircleGeometry(0.48, 24),
+        new THREE.MeshBasicMaterial({ color: 0xD90429 })
+      );
+      jpFlagSun.position.set(-4.5, 3.8, -5.58);
+      threeScene.add(jpFlagSun);
+
+      // Shotokan Crest Yellow Disc Center Wall
+      var tigerDisc = new THREE.Mesh(
+        new THREE.CircleGeometry(1.15, 32),
+        new THREE.MeshBasicMaterial({ color: 0xFFB703 })
+      );
+      tigerDisc.position.set(0, 4.0, -5.6);
+      threeScene.add(tigerDisc);
+
+      // Blue & White MJS Banner Right Wall
+      var mjsWallBanner = new THREE.Mesh(
+        new THREE.PlaneGeometry(2.6, 1.7),
+        new THREE.MeshBasicMaterial({ color: 0x0077B6 })
+      );
+      mjsWallBanner.position.set(4.5, 3.8, -5.6);
+      threeScene.add(mjsWallBanner);
+
+      // Step 2 Leadership Formation: Sensei Center, Coaches Left & Right
+      senseiGroup = buildKaratekaMesh(0x111111, 1.08, true);
+      senseiGroup.position.set(0, 0, -2.1);
+      threeScene.add(senseiGroup);
+
+      femaleCoachGroup = buildKaratekaMesh(0x111111, 1.0, false);
+      femaleCoachGroup.position.set(-1.65, 0, -2.35);
+      threeScene.add(femaleCoachGroup);
+
+      maleCoachGroup = buildKaratekaMesh(0x111111, 1.03, false);
+      maleCoachGroup.position.set(1.65, 0, -2.35);
+      threeScene.add(maleCoachGroup);
+
+      // 5 Students holding interactive boards
+      var boardConfigs = [
+        { id: `about`, label: `ABOUT`, sub: `Rei & Heritage`, color: `#FFB703`, belt: 0xFFB703, x: -3.2, z: 0.4 },
+        { id: `training`, label: `TRAINING`, sub: `High Kick Break`, color: `#0077B6`, belt: 0x0077B6, x: -1.6, z: 0.95 },
+        { id: `schedule`, label: `SCHEDULE`, sub: `Punch Strike`, color: `#D90429`, belt: 0x0F7B47, x: 0, z: 1.2 },
+        { id: `team`, label: `TEAM`, sub: `Shuto Salute`, color: `#0077B6`, belt: 0x0077B6, x: 1.6, z: 0.95 },
+        { id: `join`, label: `JOIN`, sub: `OSS! Shout`, color: `#FFB703`, belt: 0xD90429, x: 3.2, z: 0.4 }
+      ];
+
+      studentModels = [];
+      boardMeshes = [];
+
+      boardConfigs.forEach(function (cfg, idx) {
+        var student = buildKaratekaMesh(cfg.belt, 0.9, false);
+        student.position.set(cfg.x, 0, cfg.z);
+        student.userData.boardId = cfg.id;
+        student.userData.baseX = cfg.x;
+        student.userData.baseZ = cfg.z;
+        threeScene.add(student);
+        studentModels.push(student);
+
+        var tex = makeBoardTexture(cfg.label, cfg.color, cfg.sub);
+        var boardMat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6 });
+        var boardMesh = new THREE.Mesh(new THREE.BoxGeometry(1.18, 0.6, 0.08), boardMat);
+        boardMesh.position.set(cfg.x, 1.16, cfg.z + 0.56);
+        boardMesh.userData.boardId = cfg.id;
+        boardMesh.userData.homePos = new THREE.Vector3(cfg.x, 1.16, cfg.z + 0.56);
+        boardMesh.userData.index = idx;
+        threeScene.add(boardMesh);
+        boardMeshes.push(boardMesh);
+      });
+
+      // Pointer Raycasting for clicking 3D boards directly
+      var raycaster = new THREE.Raycaster();
+      var pointer = new THREE.Vector2();
+      canvas.addEventListener(`pointerdown`, function (ev) {
+        var rect = canvas.getBoundingClientRect();
+        pointer.x = ((ev.clientX - rect.left) / rect.width) * 2 - 1;
+        pointer.y = -((ev.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointer, threeCamera);
+        var hits = raycaster.intersectObjects(boardMeshes);
+        if (hits.length > 0) {
+          var id = hits[0].object.userData.boardId;
+          if (id) triggerBoardAction(id);
+        }
+      });
+
+      window.addEventListener(`resize`, function () {
+        if (!threeRenderer || !threeCamera || !canvas) return;
+        var w = canvas.clientWidth || 900;
+        var h = canvas.clientHeight || 520;
+        threeCamera.aspect = w / h;
+        threeCamera.updateProjectionMatrix();
+        threeRenderer.setSize(w, h, false);
+      });
+
+      animate3DDojo();
+      startEntranceSequence();
+    }
+
+    function spawnBoardSplinters(pos, colorHex) {
+      for (var i = 0; i < 14; i++) {
+        var piece = new THREE.Mesh(
+          new THREE.BoxGeometry(0.18 + Math.random() * 0.16, 0.09, 0.06),
+          new THREE.MeshStandardMaterial({ color: i % 3 === 0 ? colorHex : 0xF4D5A6 })
+        );
+        piece.position.copy(pos);
+        piece.userData = {
+          vx: (Math.random() - 0.5) * 0.16,
+          vy: 0.06 + Math.random() * 0.14,
+          vz: 0.04 + Math.random() * 0.12,
+          rx: (Math.random() - 0.5) * 0.25,
+          ry: (Math.random() - 0.5) * 0.25,
+          life: 1.0
+        };
+        threeScene.add(piece);
+        splinters.push(piece);
+      }
+    }
+
+    function spawnShockwave(pos, colorHex) {
+      var ring = new THREE.Mesh(
+        new THREE.RingGeometry(0.15, 0.28, 28),
+        new THREE.MeshBasicMaterial({ color: colorHex, side: THREE.DoubleSide, transparent: true, opacity: 0.95 })
+      );
+      ring.position.copy(pos);
+      ring.userData = { life: 1.0 };
+      threeScene.add(ring);
+      shockwaves.push(ring);
+    }
+
+    function animate3DDojo() {
+      requestAnimationFrame(animate3DDojo);
+      if (!threeRenderer || !threeScene || !threeCamera) return;
+      var dt = Math.min(threeClock.getDelta(), 0.05);
+      var elapsed = threeClock.getElapsedTime();
+
+      // Camera positioning by entrance step
+      var targetCamPos = new THREE.Vector3(0, 2.15, 5.15);
+      if (entranceState.step === 1) {
+        targetCamPos.set(0, 2.2, 8.5);
+      } else if (entranceState.step === 2) {
+        targetCamPos.set(0, 2.05, 6.2);
+      } else if (entranceState.activeBoardAction) {
+        var idx = entranceState.activeBoardAction.idx;
+        var st = studentModels[idx];
+        if (st) targetCamPos.set(st.position.x * 0.65, 1.85, 3.9);
+      }
+      threeCamera.position.lerp(targetCamPos, 0.07);
+      threeCamera.lookAt(0, 1.25, -0.4);
+
+      // Step 2: Bowing students
+      studentModels.forEach(function (st, idx) {
+        var u = st.userData;
+        if (entranceState.step === 2) {
+          u.torsoPivot.rotation.x += (0.72 - u.torsoPivot.rotation.x) * 0.14;
+          u.leftArmPivot.rotation.x += (0.25 - u.leftArmPivot.rotation.x) * 0.14;
+          u.rightArmPivot.rotation.x += (0.25 - u.rightArmPivot.rotation.x) * 0.14;
+        } else if (entranceState.activeBoardAction && entranceState.activeBoardAction.idx === idx) {
+          // Animated 3D Karate Technique
+          var prog = 1 - Math.max(0, entranceState.actionTimer / 0.85);
+          var actId = entranceState.activeBoardAction.id;
+          if (actId === `training`) {
+            // 3D High Kick
+            u.rightLegPivot.rotation.x = -Math.sin(prog * Math.PI) * 1.95;
+            u.torsoPivot.rotation.z = Math.sin(prog * Math.PI) * 0.35;
+          } else if (actId === `schedule`) {
+            // 3D Reverse Punch
+            u.rightArmPivot.rotation.x = -Math.sin(prog * Math.PI) * 1.65;
+            u.torsoPivot.rotation.y = Math.sin(prog * Math.PI) * 0.45;
+          } else if (actId === `join`) {
+            // Gedan-Barai + OSS Shout
+            u.leftArmPivot.rotation.x = -Math.sin(prog * Math.PI) * 1.1;
+            st.position.y = Math.sin(prog * Math.PI) * 0.22;
+          } else if (actId === `about`) {
+            // Bow + Age-Uke Rising Block
+            u.torsoPivot.rotation.x = Math.sin(prog * Math.PI) * 0.55;
+            u.rightArmPivot.rotation.x = -Math.sin(prog * Math.PI) * 2.2;
+          } else {
+            // Shuto-Uke Salute
+            u.leftArmPivot.rotation.x = -Math.sin(prog * Math.PI) * 1.25;
+            u.rightArmPivot.rotation.z = Math.sin(prog * Math.PI) * 0.55;
+          }
+        } else {
+          // Ready idle breathing
+          u.torsoPivot.rotation.x += (0 - u.torsoPivot.rotation.x) * 0.12;
+          u.torsoPivot.rotation.y += (0 - u.torsoPivot.rotation.y) * 0.12;
+          u.torsoPivot.rotation.z += (0 - u.torsoPivot.rotation.z) * 0.12;
+          u.rightLegPivot.rotation.x += (0 - u.rightLegPivot.rotation.x) * 0.15;
+          u.rightArmPivot.rotation.x += (-0.4 - u.rightArmPivot.rotation.x) * 0.1;
+          u.leftArmPivot.rotation.x += (-0.4 - u.leftArmPivot.rotation.x) * 0.1;
+          st.position.y = Math.sin(elapsed * 2 + idx) * 0.025;
+        }
+      });
+
+      // Sensei & Coaches subtle ready idle
+      if (senseiGroup) senseiGroup.position.y = Math.sin(elapsed * 1.6) * 0.02;
+
+      // Board hover float & reset after break
+      boardMeshes.forEach(function (bm, idx) {
+        if (bm.visible) {
+          bm.position.y = bm.userData.homePos.y + Math.sin(elapsed * 2.4 + idx) * 0.035;
+        }
+      });
+
+      // Update action timer
+      if (entranceState.activeBoardAction) {
+        entranceState.actionTimer -= dt;
+        if (entranceState.actionTimer <= 0) {
+          var targetSection = entranceState.activeBoardAction.id;
+          entranceState.activeBoardAction = null;
+          boardMeshes.forEach(function (bm) { bm.visible = true; });
+          scrollToSection(targetSection);
+        }
+      }
+
+      // Update splinters
+      for (var i = splinters.length - 1; i >= 0; i--) {
+        var sp = splinters[i];
+        sp.position.x += sp.userData.vx;
+        sp.position.y += sp.userData.vy;
+        sp.position.z += sp.userData.vz;
+        sp.userData.vy -= 0.009;
+        sp.rotation.x += sp.userData.rx;
+        sp.rotation.y += sp.userData.ry;
+        sp.userData.life -= dt * 1.1;
+        if (sp.userData.life <= 0) {
+          threeScene.remove(sp);
+          splinters.splice(i, 1);
+        }
+      }
+
+      // Update shockwaves
+      for (var j = shockwaves.length - 1; j >= 0; j--) {
+        var sw = shockwaves[j];
+        sw.scale.addScalar(dt * 4.2);
+        sw.userData.life -= dt * 1.7;
+        sw.material.opacity = Math.max(0, sw.userData.life);
+        if (sw.userData.life <= 0) {
+          threeScene.remove(sw);
+          shockwaves.splice(j, 1);
+        }
+      }
+
+      threeRenderer.render(threeScene, threeCamera);
+    }
+
+    function clearEntranceTimeouts() {
+      entranceTimeouts.forEach(function (t) { clearTimeout(t); });
+      entranceTimeouts = [];
+    }
+
+    function startEntranceSequence() {
+      clearEntranceTimeouts();
+      entranceState.step = 1;
+      entranceState.skipped = false;
+
+      var doorOverlay = document.getElementById(`door-overlay`);
+      var doorLight = document.getElementById(`door-light-beam`);
+      var skipBtn = document.getElementById(`skip-entrance-btn`);
+      var stepBadge = document.getElementById(`stage-step-badge`);
+      var ossPop = document.getElementById(`oss-impact-pop`);
+
+      if (doorOverlay) doorOverlay.classList.remove(`is-open`);
+      if (doorLight) doorLight.classList.remove(`is-hidden`);
+      if (skipBtn) skipBtn.classList.remove(`is-hidden`);
+      if (ossPop) ossPop.classList.remove(`is-visible`);
+      if (stepBadge) stepBadge.textContent = `Step 1/5 • Grand Dojo Doors`;
+
+      // Open wooden doors immediately over 2s
+      entranceTimeouts.push(setTimeout(function () {
+        if (doorOverlay) doorOverlay.classList.add(`is-open`);
+      }, 150));
+
+      // Step 2 at 2.0s: Sensei + Coaches + Bowing Students + OSS! Impact Shake
+      entranceTimeouts.push(setTimeout(function () {
+        if (entranceState.skipped) return;
+        entranceState.step = 2;
+        if (doorLight) doorLight.classList.add(`is-hidden`);
+        if (stepBadge) stepBadge.textContent = `Step 2/5 • Sensei & Bowing Students (OSS!)`;
+        triggerOssImpact(`OSS!`, true);
+      }, 2000));
+
+      // Step 3 at 4.1s: Zoom inside revealing 5 board-holding students
+      entranceTimeouts.push(setTimeout(function () {
+        if (entranceState.skipped) return;
+        entranceState.step = 3;
+        if (ossPop) ossPop.classList.remove(`is-visible`);
+        if (stepBadge) stepBadge.textContent = `Step 3/5 • Click Any 3D Student Board`;
+        if (skipBtn) skipBtn.classList.add(`is-hidden`);
+      }, 4100));
+    }
+
+    function skipEntrance() {
+      clearEntranceTimeouts();
+      entranceState.skipped = true;
+      entranceState.step = 3;
+      var doorOverlay = document.getElementById(`door-overlay`);
+      var doorLight = document.getElementById(`door-light-beam`);
+      var skipBtn = document.getElementById(`skip-entrance-btn`);
+      var ossPop = document.getElementById(`oss-impact-pop`);
+      var stepBadge = document.getElementById(`stage-step-badge`);
+      if (doorOverlay) doorOverlay.classList.add(`is-open`);
+      if (doorLight) doorLight.classList.add(`is-hidden`);
+      if (skipBtn) skipBtn.classList.add(`is-hidden`);
+      if (ossPop) ossPop.classList.remove(`is-visible`);
+      if (stepBadge) stepBadge.textContent = `Interactive Dojo • Click a 3D Board`;
+    }
+
+    function replayEntrance() {
+      startEntranceSequence();
+    }
+
+    function triggerOssImpact(labelText, withShake) {
+      var ossPop = document.getElementById(`oss-impact-pop`);
+      var ossText = document.getElementById(`oss-banner-text`);
+      var wrap = document.getElementById(`dojo-stage-wrap`);
+      if (ossText) ossText.textContent = labelText || `OSS!`;
+      if (ossPop) ossPop.classList.add(`is-visible`);
+      playDojoImpactSound(`oss`);
+      if (withShake && wrap) {
+        wrap.classList.remove(`is-shaking`);
+        void wrap.offsetWidth;
+        wrap.classList.add(`is-shaking`);
+      }
+      setTimeout(function () {
+        if (ossPop) ossPop.classList.remove(`is-visible`);
+      }, 1150);
+    }
+
+    function triggerBoardAction(boardId) {
+      skipEntrance();
+      var mapIdx = { about: 0, training: 1, schedule: 2, team: 3, join: 4 };
+      var idx = mapIdx[boardId];
+      if (typeof idx !== `number`) return;
+
+      var feedback = document.getElementById(`board-feedback`);
+      var stepBadge = document.getElementById(`stage-step-badge`);
+      document.querySelectorAll(`.board-btn`).forEach(function (b) {
+        b.classList.toggle(`is-active`, b.dataset.board === boardId);
+      });
+
+      entranceState.activeBoardAction = { id: boardId, idx: idx };
+      entranceState.actionTimer = 0.85;
+
+      var bm = boardMeshes[idx];
+      if (bm && threeScene) {
+        if (boardId === `training`) {
+          bm.visible = false;
+          spawnBoardSplinters(bm.position, 0x0077B6);
+          playDojoImpactSound(`break`);
+          if (feedback) feedback.textContent = `3D High Kick Shattered Training Board!`;
+          if (stepBadge) stepBadge.textContent = `Step 4/5 • 3D High Kick Break`;
+        } else if (boardId === `schedule`) {
+          spawnShockwave(bm.position, 0xD90429);
+          playDojoImpactSound(`punch`);
+          if (feedback) feedback.textContent = `3D Reverse Punch Impact on Schedule!`;
+          if (stepBadge) stepBadge.textContent = `Step 4/5 • 3D Reverse Punch`;
+        } else if (boardId === `join`) {
+          spawnShockwave(bm.position, 0xFFB703);
+          triggerOssImpact(`OSS! JOIN US`, true);
+          if (feedback) feedback.textContent = `OSS! Shout Triggered — Opening Registration!`;
+          if (stepBadge) stepBadge.textContent = `Step 4/5 • OSS! Registration Shout`;
+        } else if (boardId === `about`) {
+          spawnShockwave(bm.position, 0xFFB703);
+          playDojoImpactSound(`punch`);
+          if (feedback) feedback.textContent = `Formal Rei Bow — Opening Dojo Heritage!`;
+          if (stepBadge) stepBadge.textContent = `Step 4/5 • Formal Rei & Block`;
+        } else {
+          spawnShockwave(bm.position, 0x0077B6);
+          playDojoImpactSound(`punch`);
+          if (feedback) feedback.textContent = `Shuto Salute — Presenting Instructors!`;
+          if (stepBadge) stepBadge.textContent = `Step 4/5 • Shuto-Uke Salute`;
+        }
+      } else {
+        scrollToSection(boardId);
+      }
+    }
+
+    function scrollToSection(sectionId) {
+      var target = document.getElementById(sectionId);
+      if (target) target.scrollIntoView({ behavior: `smooth`, block: `start` });
+      document.querySelectorAll(`.nav-btn`).forEach(function (btn) {
+        var matches = btn.textContent.trim().toLowerCase() === sectionId.toLowerCase();
+        btn.classList.toggle(`is-active`, matches);
+      });
+    }
+
+    // =========================================================================
+    // 4. PUBLIC CLASS TIMELINE, VIDEO HUB ANIMATOR, SCHEDULE & MEDAL CHART
+    // =========================================================================
+    function setTimelineTrack(mode, btn) {
+      currentTrackMode = mode;
+      document.querySelectorAll(`[data-track-mode]`).forEach(function (b) {
+        b.classList.toggle(`btn--primary`, b === btn);
+      });
+      renderTimelineDetail();
+    }
+
+    function selectTimelinePhase(idx) {
+      currentPhaseIndex = idx;
+      document.querySelectorAll(`.timeline-step`).forEach(function (step, i) {
+        step.classList.toggle(`is-active`, i === idx);
+      });
+      renderTimelineDetail();
+    }
+
+    function renderTimelineDetail() {
+      var phase = TIMELINE_PHASES[currentPhaseIndex];
+      if (!phase) return;
+      var k = document.getElementById(`phase-kicker`);
+      var t = document.getElementById(`phase-title`);
+      var d = document.getElementById(`phase-desc`);
+      var c = document.getElementById(`phase-checkpoint`);
+      if (k) k.textContent = `Phase 0` + (currentPhaseIndex + 1) + ` • ` + currentTrackMode;
+      if (t) t.textContent = phase.title;
+      if (d) d.textContent = phase.desc;
+      if (c) c.textContent = phase.checkpoints[currentTrackMode] || ``;
+    }
+
+    // Video Hub 2D Technique Canvas Animator
+    var videoAnimId = null;
+    var videoPlaying = true;
+    var videoSpeed = 1.0;
+    var videoTime = 0;
+    var activeTechKey = `mawashi`;
+    var TECH_DATA = {
+      mawashi: {
+        title: `Mawashi-Geri (Roundhouse High Kick)`,
+        notes: `Lead Coach Dilshan Isuru demonstrates hip chamber pivot, supporting heel rotation, and snapping instep strike with rapid recoil.`
+      },
+      gyaku: {
+        title: `Gyaku-Zuki (Explosive Reverse Punch)`,
+        notes: `Drive off the rear ball of the foot, rotate the hip decisively, and snap the fist into the centerline before recovering guard.`
+      },
+      heian: {
+        title: `Heian Shodan Kata Flow`,
+        notes: `Sensei Jayasinghe Herath emphasizes crisp Gedan-Barai sweeps and upright posture across all 21 movements.`
+      },
+      kumite: {
+        title: `Kumite Blitz Footwork & Counter`,
+        notes: `Head Female Coach Ashinshani Menaka drills split-step entry, angle step-off, and immediate Kizami-Zuki scoring.`
+      }
+    };
+
+    function selectTechniqueVideo(key, btn) {
+      activeTechKey = key;
+      var info = TECH_DATA[key];
+      var t = document.getElementById(`video-hub-title`);
+      var n = document.getElementById(`video-hub-notes`);
+      if (info && t) t.textContent = info.title;
+      if (info && n) n.textContent = info.notes;
+      if (btn && btn.parentElement) {
+        btn.parentElement.querySelectorAll(`.btn`).forEach(function (b) {
+          b.classList.remove(`btn--primary`);
+        });
+        btn.classList.add(`btn--primary`);
+      }
+    }
+
+    function toggleVideoPlay() {
+      videoPlaying = !videoPlaying;
+      var btn = document.getElementById(`video-play-btn`);
+      if (btn) btn.textContent = videoPlaying ? `Pause` : `Play`;
+    }
+
+    function toggleVideoSpeed() {
+      videoSpeed = videoSpeed === 1.0 ? 0.5 : 1.0;
+      var btn = document.getElementById(`video-speed-btn`);
+      if (btn) btn.textContent = videoSpeed === 1.0 ? `1.0x Speed` : `0.5x Slow-Mo`;
+    }
+
+    function startTechniqueCanvasLoop() {
+      var canvas = document.getElementById(`technique-canvas`);
+      if (!canvas) return;
+      var ctx = canvas.getContext(`2d`);
+      cancelAnimationFrame(videoAnimId);
+
+      function renderFrame() {
+        var w = canvas.clientWidth || 640;
+        var h = canvas.clientHeight || 300;
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+        }
+        if (videoPlaying) videoTime += 0.035 * videoSpeed;
+
+        var cBg = readCssToken(`--surface-dark`, `#141414`);
+        var cYellow = readCssToken(`--primary-container`, `#FFB703`);
+        var cRed = readCssToken(`--secondary`, `#D90429`);
+        var cBlue = readCssToken(`--tertiary`, `#0077B6`);
+        var cWhite = readCssToken(`--background`, `#FFFFFF`);
+
+        ctx.fillStyle = cBg;
+        ctx.fillRect(0, 0, w, h);
+
+        // Tatami floor line
+        ctx.strokeStyle = cBlue;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(40, h - 48);
+        ctx.lineTo(w - 40, h - 48);
+        ctx.stroke();
+
+        var cycle = (Math.sin(videoTime * 2.2) + 1) * 0.5;
+        var cx = w * 0.44;
+        var cy = h - 48;
+
+        if (activeTechKey === `kumite`) cx = w * 0.36 + cycle * 95;
+
+        // Draw articulated karateka stick silhouette in crisp Bauhaus geometry
+        ctx.strokeStyle = cWhite;
+        ctx.lineWidth = 10;
+        ctx.lineCap = `square`;
+
+        // Standing leg
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 82);
+        ctx.lineTo(cx - 22, cy);
+        ctx.stroke();
+
+        // Action leg
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 82);
+        if (activeTechKey === `mawashi`) {
+          var kickAngle = -0.3 - cycle * 1.45;
+          ctx.lineTo(cx + Math.cos(kickAngle) * 86, (cy - 82) + Math.sin(kickAngle) * 86);
+        } else {
+          ctx.lineTo(cx + 28, cy);
+        }
+        ctx.stroke();
+
+        // Torso & Black Belt
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 82);
+        ctx.lineTo(cx, cy - 146);
+        ctx.stroke();
+        ctx.fillStyle = cYellow;
+        ctx.fillRect(cx - 12, cy - 92, 24, 8);
+
+        // Head
+        ctx.fillStyle = cWhite;
+        ctx.beginPath();
+        ctx.arc(cx, cy - 170, 18, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = cRed;
+        ctx.fillRect(cx - 18, cy - 178, 36, 6);
+
+        // Punch / Block Arm
+        ctx.strokeStyle = cWhite;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 134);
+        if (activeTechKey === `gyaku` || activeTechKey === `kumite`) {
+          ctx.lineTo(cx + 35 + cycle * 65, cy - 132);
+        } else if (activeTechKey === `heian`) {
+          ctx.lineTo(cx + 48, cy - 134 - cycle * 48);
+        } else {
+          ctx.lineTo(cx + 34, cy - 118);
+        }
+        ctx.stroke();
+
+        // Target Impact Pad & Kinetic Arc
+        var targetX = cx + 130;
+        var targetY = activeTechKey === `mawashi` ? cy - 148 : cy - 132;
+        ctx.fillStyle = cycle > 0.82 ? cYellow : cRed;
+        ctx.fillRect(targetX, targetY - 24, 16, 48);
+
+        if (cycle > 0.8) {
+          ctx.strokeStyle = cYellow;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.arc(targetX, targetY, 18 + (cycle - 0.8) * 90, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        // HUD Telemetry
+        ctx.fillStyle = cYellow;
+        ctx.font = `bold 13px "Space Grotesk", sans-serif`;
+        ctx.fillText(`MJS SMART DOJO FORM TRACKER • ` + activeTechKey.toUpperCase(), 24, 28);
+
+        videoAnimId = requestAnimationFrame(renderFrame);
+      }
+      renderFrame();
+    }
+
+    function filterSchedule(division, btn) {
+      if (btn && btn.parentElement) {
+        btn.parentElement.querySelectorAll(`.btn`).forEach(function (b) {
+          b.classList.remove(`btn--primary`);
+        });
+        btn.classList.add(`btn--primary`);
+      }
+      var tbody = document.getElementById(`public-schedule-tbody`);
+      if (!tbody) return;
+      var rows = SCHEDULE_ROWS.filter(function (r) {
+        return division === `ALL` || r.division === division || r.division === `All`;
+      });
+      tbody.innerHTML = rows.map(function (r) {
+        return `<tr>
+          <td><strong>${r.day}</strong></td>
+          <td class="num-cell">${r.time}</td>
+          <td>${r.title}</td>
+          <td><span class="tag tag--blue">${r.division}</span></td>
+          <td>${r.coach}</td>
+          <td>${r.mat}</td>
+        </tr>`;
+      }).join(``);
+    }
+
+    function initMedalsChart() {
+      var canvas = document.getElementById(`medals-chart`);
+      if (!canvas || typeof Chart === `undefined`) return;
+      var cRed = readCssToken(`--data-1`, `#D90429`);
+      var cBlue = readCssToken(`--data-2`, `#0077B6`);
+      var cBlack = readCssToken(`--data-3`, `#141414`);
+      new Chart(canvas, {
+        type: `bar`,
+        data: {
+          labels: [`2022`, `2023`, `2024`, `2025`, `2026`],
+          datasets: [
+            { label: `Gold`, data: [5, 8, 12, 16, 21], backgroundColor: cRed, borderColor: cBlack, borderWidth: 2 },
+            { label: `Silver`, data: [4, 7, 9, 12, 15], backgroundColor: cBlue, borderColor: cBlack, borderWidth: 2 },
+            { label: `Bronze`, data: [6, 9, 10, 11, 14], backgroundColor: cBlack, borderColor: cBlack, borderWidth: 2 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: `top`, labels: { font: { family: `Space Grotesk`, weight: `700` } } }
+          },
+          scales: {
+            y: { beginAtZero: true, grid: { color: readCssToken(`--outline-variant`, `#CFCFC8`) } },
+            x: { grid: { display: false } }
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // 5. PUBLIC REGISTRATION & PRINTABLE ADMISSION SLIP
+    // =========================================================================
+    async function submitPublicRegistration(event) {
+      event.preventDefault();
+      var nameEl = document.getElementById(`reg-name`);
+      var ageEl = document.getElementById(`reg-age`);
+      var divEl = document.getElementById(`reg-division`);
+      var guardEl = document.getElementById(`reg-guardian`);
+      var phoneEl = document.getElementById(`reg-phone`);
+      var expEl = document.getElementById(`reg-exp`);
+      var msgEl = document.getElementById(`reg-status-msg`);
+
+      if (!nameEl || !ageEl || !divEl || !guardEl || !phoneEl) return;
+
+      var appId = `MJS-APP-2026-` + String(Math.floor(100 + Math.random() * 899));
+      var today = new Date().toISOString().slice(0, 10);
+      var newApp = {
+        appId: appId,
+        name: nameEl.value.trim(),
+        age: Number(ageEl.value),
+        division: divEl.value,
+        guardian: guardEl.value.trim(),
+        phone: phoneEl.value.trim(),
+        exp: expEl ? expEl.value : `Beginner`,
+        date: today
+      };
+
+      appState.pendingApplicants.unshift(newApp);
+      appState.lastAdmissionSlip = newApp;
+      await persistAppState();
+
+      renderAdmissionSlip(newApp);
+      renderApprovals();
+      if (msgEl) {
+        msgEl.textContent = `Application ${appId} submitted to Sensei Approval Queue and slip generated.`;
+        msgEl.className = `status-msg status-msg--ok is-visible`;
+      }
+      document.getElementById(`public-join-form`).reset();
+    }
+
+    function renderAdmissionSlip(slip) {
+      if (!slip) return;
+      var idEl = document.getElementById(`slip-app-id`);
+      var nEl = document.getElementById(`slip-name`);
+      var dEl = document.getElementById(`slip-division`);
+      var gEl = document.getElementById(`slip-guardian`);
+      var dtEl = document.getElementById(`slip-date`);
+      if (idEl) idEl.textContent = slip.appId;
+      if (nEl) nEl.textContent = slip.name + ` (Age ` + slip.age + `)`;
+      if (dEl) dEl.textContent = slip.division + ` • ` + slip.exp;
+      if (gEl) gEl.textContent = slip.guardian + ` • ` + slip.phone;
+      if (dtEl) dtEl.textContent = slip.date + ` • Kurunegala Main Hall`;
+    }
+
+    function printAdmissionSlip() {
+      var slip = document.getElementById(`printable-slip-card`);
+      var cert = document.getElementById(`certificate-print-area`);
+      if (cert) cert.classList.remove(`print-target`);
+      if (slip) slip.classList.add(`print-target`);
+      window.print();
+    }
+
+    function downloadAdmissionSlip() {
+      var slip = appState.lastAdmissionSlip || {
+        appId: `MJS-APP-DEMO`,
+        name: `Prospective Student`,
+        division: `Kids (5–10 yrs)`,
+        guardian: `Guardian`,
+        phone: `077-0000000`,
+        date: `2026-11-24`
+      };
+      var content = [
+        `MJS KARATE ACADEMY — MJS SMART DOJO KURUNEGALA`,
+        `STUDENT ADMISSION & TRIAL SLIP`,
+        `--------------------------------------------`,
+        `Application ID : ${slip.appId}`,
+        `Student Name   : ${slip.name}`,
+        `Division       : ${slip.division}`,
+        `Guardian       : ${slip.guardian} (${slip.phone})`,
+        `Issued Date    : ${slip.date}`,
+        `Chief Instructor: Sensei Jayasinghe Herath (5th Dan)`
+      ].join(`\n`);
+
+      if (window.notebookAppApi && window.notebookAppApi.triggerFileDownload) {
+        window.notebookAppApi.triggerFileDownload({
+          content: content,
+          contentType: `text/plain`,
+          encoding: `UTF-8`,
+          filename: `${slip.appId}.txt`
+        });
+      }
+    }
+
+    // =========================================================================
+    // 6. HIDDEN STAFF PORTAL (6 MODULES)
+    // =========================================================================
+    function toggleStaffLockPanel() {
+      var shell = document.getElementById(`staff-portal-shell`);
+      if (!shell) return;
+      shell.classList.toggle(`is-hidden`);
+      if (!shell.classList.contains(`is-hidden`)) {
+        shell.scrollIntoView({ behavior: `smooth`, block: `start` });
+      }
+    }
+
+    function closeStaffPortal() {
+      var shell = document.getElementById(`staff-portal-shell`);
+      if (shell) shell.classList.add(`is-hidden`);
+    }
+
+    function unlockStaffPortal() {
+      var pin = document.getElementById(`staff-pin-input`);
+      var msg = document.getElementById(`staff-auth-msg`);
+      if (pin && pin.value.trim() === `2026`) {
+        activateStaffWorkspace();
+      } else if (msg) {
+        msg.textContent = `Invalid PIN. Enter 2026 or click Quick Demo Unlock.`;
+        msg.classList.add(`is-visible`);
+      }
+    }
+
+    function quickUnlockDemo() {
+      activateStaffWorkspace();
+    }
+
+    function activateStaffWorkspace() {
+      staffUnlocked = true;
+      var gate = document.getElementById(`staff-auth-gate`);
+      var ws = document.getElementById(`staff-workspace`);
+      if (gate) gate.style.display = `none`;
+      if (ws) ws.style.display = `grid`;
+      renderAllStaffModules();
+    }
+
+    function switchStaffTab(tabKey) {
+      document.querySelectorAll(`.staff-tab-btn`).forEach(function (b) {
+        b.classList.toggle(`is-active`, b.dataset.tab === tabKey);
+      });
+      document.querySelectorAll(`.staff-panel`).forEach(function (p) {
+        p.classList.toggle(`is-active`, p.id === `staff-panel-` + tabKey);
+      });
+    }
+
+    function renderAllStaffModules() {
+      renderAttendanceLog();
+      renderStaffRoster();
+      renderFeeLedger();
+      renderSmsLog();
+      renderGradingTable();
+      populateCertStudents();
+      renderApprovals();
+      updatePublicMetricCount();
+    }
+
+    function updatePublicMetricCount() {
+      var el = document.getElementById(`stat-active-students`);
+      if (el) el.textContent = String(144 + appState.students.length);
+    }
+
+    // Module 1: QR / Index Attendance Scanner
+    function simulateQrScan(indexCode) {
+      var input = document.getElementById(`scan-index-input`);
+      if (input) input.value = indexCode;
+      processAttendanceScan();
+    }
+
+    async function processAttendanceScan() {
+      var input = document.getElementById(`scan-index-input`);
+      var sessionSel = document.getElementById(`scan-session-select`);
+      var fb = document.getElementById(`scan-feedback`);
+      if (!input || !fb) return;
+
+      var code = input.value.trim().toUpperCase();
+      var student = appState.students.find(function (s) { return s.index.toUpperCase() === code; });
+      if (!student) {
+        fb.textContent = `Student Index "${code}" not found in active roster.`;
+        fb.className = `status-msg status-msg--error is-visible`;
+        return;
+      }
+
+      student.sessions = (student.sessions || 0) + 1;
+      var now = new Date();
+      var hhmm = String(now.getHours()).padStart(2, `0`) + `:` + String(now.getMinutes()).padStart(2, `0`);
+      var sessionName = sessionSel ? sessionSel.value : `Evening Shotokan Kihon`;
+
+      appState.attendanceLog.unshift({
+        time: hhmm,
+        index: student.index,
+        name: student.name,
+        session: sessionName,
+        total: student.sessions
+      });
+      appState.smsLog.unshift({
+        time: hhmm,
+        to: student.phone,
+        text: `MJS Smart Dojo: ${student.name} (${student.index}) checked in for ${sessionName}. Total sessions: ${student.sessions}.`
+      });
+
+      await persistAppState();
+      fb.textContent = `Checked in ${student.name} (${student.index}) • Parent SMS receipt logged!`;
+      fb.className = `status-msg status-msg--ok is-visible`;
+      input.value = ``;
+      renderAllStaffModules();
+    }
+
+    function renderAttendanceLog() {
+      var tbody = document.getElementById(`attendance-log-tbody`);
+      if (!tbody) return;
+      tbody.innerHTML = appState.attendanceLog.slice(0, 10).map(function (row) {
+        return `<tr>
+          <td class="num-cell">${row.time}</td>
+          <td><span class="tag tag--dark">${row.index}</span></td>
+          <td><strong>${row.name}</strong></td>
+          <td>${row.session}</td>
+          <td class="num-cell">${row.total}</td>
+        </tr>`;
+      }).join(``);
+    }
+
+    // Module 2: Student CRUD
+    async function saveStudentCrud() {
+      var editIdx = document.getElementById(`crud-edit-index`).value.trim();
+      var name = document.getElementById(`crud-name`).value.trim();
+      var phone = document.getElementById(`crud-phone`).value.trim();
+      var belt = document.getElementById(`crud-belt`).value;
+      var track = document.getElementById(`crud-track`).value;
+      var fb = document.getElementById(`crud-feedback`);
+
+      if (!name || !phone) {
+        if (fb) {
+          fb.textContent = `Please provide both Student Full Name and Parent SMS Phone.`;
+          fb.className = `status-msg status-msg--error is-visible`;
+        }
+        return;
+      }
+
+      if (editIdx) {
+        var existing = appState.students.find(function (s) { return s.index === editIdx; });
+        if (existing) {
+          existing.name = name;
+          existing.phone = phone;
+          existing.belt = belt;
+          existing.track = track;
+        }
+        if (fb) {
+          fb.textContent = `Updated student record ${editIdx}.`;
+          fb.className = `status-msg status-msg--ok is-visible`;
+        }
+      } else {
+        var nextNum = 101 + appState.students.length + Math.floor(Math.random() * 5);
+        var newIndex = `MJS-` + nextNum;
+        while (appState.students.some(function (s) { return s.index === newIndex; })) {
+          nextNum++;
+          newIndex = `MJS-` + nextNum;
+        }
+        appState.students.unshift({
+          index: newIndex,
+          name: name,
+          phone: phone,
+          belt: belt,
+          track: track,
+          sessions: 1,
+          feeStatus: `Pending`,
+          feeAmount: track.indexOf(`Seniors`) !== -1 ? 3000 : 2500
+        });
+        if (fb) {
+          fb.textContent = `Enrolled new student ${name} as ${newIndex}.`;
+          fb.className = `status-msg status-msg--ok is-visible`;
+        }
+      }
+
+      resetStudentCrudForm();
+      await persistAppState();
+      renderAllStaffModules();
+    }
+
+    function editStudentCrud(indexCode) {
+      var st = appState.students.find(function (s) { return s.index === indexCode; });
+      if (!st) return;
+      document.getElementById(`crud-edit-index`).value = st.index;
+      document.getElementById(`crud-name`).value = st.name;
+      document.getElementById(`crud-phone`).value = st.phone;
+      document.getElementById(`crud-belt`).value = st.belt;
+      document.getElementById(`crud-track`).value = st.track;
+      document.getElementById(`crud-form-title`).textContent = `Editing Record: ` + st.index;
+    }
+
+    function resetStudentCrudForm() {
+      document.getElementById(`crud-edit-index`).value = ``;
+      document.getElementById(`crud-name`).value = ``;
+      document.getElementById(`crud-phone`).value = ``;
+      document.getElementById(`crud-form-title`).textContent = `Add or Update Student Record`;
+    }
+
+    async function deleteStudentCrud(indexCode, btn) {
+      if (btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        btn.textContent = `Confirm?`;
+        btn.classList.add(`btn--red`);
+        return;
+      }
+      appState.students = appState.students.filter(function (s) { return s.index !== indexCode; });
+      await persistAppState();
+      renderAllStaffModules();
+    }
+
+    function renderStaffRoster() {
+      var tbody = document.getElementById(`crud-roster-tbody`);
+      var qEl = document.getElementById(`crud-search-input`);
+      var fEl = document.getElementById(`crud-filter-track`);
+      if (!tbody) return;
+      var q = qEl ? qEl.value.trim().toLowerCase() : ``;
+      var trk = fEl ? fEl.value : `ALL`;
+
+      var filtered = appState.students.filter(function (s) {
+        var matchQ = !q || s.name.toLowerCase().indexOf(q) !== -1 || s.index.toLowerCase().indexOf(q) !== -1;
+        var matchT = trk === `ALL` || s.track === trk;
+        return matchQ && matchT;
+      });
+
+      tbody.innerHTML = filtered.map(function (s) {
+        return `<tr>
+          <td><span class="tag tag--dark">${s.index}</span></td>
+          <td><strong>${s.name}</strong></td>
+          <td>${s.track}</td>
+          <td>${s.belt}</td>
+          <td class="num-cell">${s.phone}</td>
+          <td style="display:flex; gap:var(--space-xs); flex-wrap:wrap;">
+            <button type="button" class="btn btn--sm" onclick="editStudentCrud('${s.index}')">Edit</button>
+            <button type="button" class="btn btn--sm" onclick="deleteStudentCrud('${s.index}', this)">Delete</button>
+          </td>
+        </tr>`;
+      }).join(``);
+    }
+
+    function exportRosterCsv() {
+      var lines = [`Index,Name,Division,Belt,Phone,Sessions,FeeStatus`];
+      appState.students.forEach(function (s) {
+        lines.push(`${s.index},"${s.name}","${s.track}","${s.belt}",${s.phone},${s.sessions},${s.feeStatus}`);
+      });
+      if (window.notebookAppApi && window.notebookAppApi.triggerFileDownload) {
+        window.notebookAppApi.triggerFileDownload({
+          content: lines.join(`\n`),
+          contentType: `text/csv`,
+          encoding: `UTF-8`,
+          filename: `mjs_dojo_roster.csv`
+        });
+      }
+    }
+
+    // Module 3: Fee Ledger & Automated Parent SMS
+    async function markFeePaidAndSms(indexCode) {
+      var st = appState.students.find(function (s) { return s.index === indexCode; });
+      if (!st) return;
+      st.feeStatus = `Paid`;
+      var now = new Date();
+      var hhmm = String(now.getHours()).padStart(2, `0`) + `:` + String(now.getMinutes()).padStart(2, `0`);
+      appState.smsLog.unshift({
+        time: hhmm,
+        to: st.phone,
+        text: `MJS Smart Dojo: Fee payment of LKR ${st.feeAmount} received for ${st.name} (${st.index}). Thank you! OSS!`
+      });
+      await persistAppState();
+      renderFeeLedger();
+      renderSmsLog();
+    }
+
+    async function sendFeeReminderSms(indexCode) {
+      var st = appState.students.find(function (s) { return s.index === indexCode; });
+      if (!st) return;
+      var now = new Date();
+      var hhmm = String(now.getHours()).padStart(2, `0`) + `:` + String(now.getMinutes()).padStart(2, `0`);
+      appState.smsLog.unshift({
+        time: hhmm,
+        to: st.phone,
+        text: `MJS Smart Dojo Reminder: Monthly dojo fee (LKR ${st.feeAmount}) for ${st.name} (${st.index}) is due at Kurunegala Desk.`
+      });
+      await persistAppState();
+      renderSmsLog();
+    }
+
+    function renderFeeLedger() {
+      var tbody = document.getElementById(`fee-ledger-tbody`);
+      if (!tbody) return;
+      tbody.innerHTML = appState.students.map(function (s) {
+        var badgeClass = s.feeStatus === `Paid` ? `tag--green` : (s.feeStatus === `Overdue` ? `tag--red` : ``);
+        return `<tr>
+          <td><span class="tag tag--dark">${s.index}</span></td>
+          <td><strong>${s.name}</strong></td>
+          <td class="num-cell">${s.phone}</td>
+          <td class="num-cell">LKR ${s.feeAmount}</td>
+          <td><span class="tag ${badgeClass}">${s.feeStatus}</span></td>
+          <td style="display:flex; gap:var(--space-xs); flex-wrap:wrap;">
+            <button type="button" class="btn btn--sm btn--primary" onclick="markFeePaidAndSms('${s.index}')">Paid + SMS</button>
+            <button type="button" class="btn btn--sm" onclick="sendFeeReminderSms('${s.index}')">Remind SMS</button>
+          </td>
+        </tr>`;
+      }).join(``);
+    }
+
+    function renderSmsLog() {
+      var box = document.getElementById(`sms-log-list`);
+      if (!box) return;
+      box.innerHTML = appState.smsLog.slice(0, 12).map(function (sms) {
+        return `<div style="border:var(--border-medium); padding:var(--space-sm); background:var(--surface-container-low);">
+          <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700; text-transform:uppercase;">
+            <span>TO: ${sms.to}</span>
+            <span>${sms.time} • SENT</span>
+          </div>
+          <div style="font-size:0.875rem; margin-top:4px;">${sms.text}</div>
+        </div>`;
+      }).join(``);
+    }
+
+    // Module 4: Belt Grading Tracker
+    async function promoteStudentBelt(indexCode) {
+      var st = appState.students.find(function (s) { return s.index === indexCode; });
+      if (!st) return;
+      var curIdx = BELT_ORDER.indexOf(st.belt);
+      if (curIdx >= 0 && curIdx < BELT_ORDER.length - 1) {
+        st.belt = BELT_ORDER[curIdx + 1];
+        var now = new Date();
+        var hhmm = String(now.getHours()).padStart(2, `0`) + `:` + String(now.getMinutes()).padStart(2, `0`);
+        appState.smsLog.unshift({
+          time: hhmm,
+          to: st.phone,
+          text: `MJS Smart Dojo: Congratulations! ${st.name} (${st.index}) promoted to ${st.belt} by Sensei Jayasinghe Herath!`
+        });
+        await persistAppState();
+        var fb = document.getElementById(`grading-feedback`);
+        if (fb) {
+          fb.textContent = `Promoted ${st.name} to ${st.belt} and sent Parent Congratulations SMS!`;
+          fb.className = `status-msg status-msg--ok is-visible`;
+        }
+        renderAllStaffModules();
+      }
+    }
+
+    function renderGradingTable() {
+      var tbody = document.getElementById(`grading-tbody`);
+      if (!tbody) return;
+      tbody.innerHTML = appState.students.map(function (s) {
+        var ready = s.sessions >= 16;
+        var atMax = BELT_ORDER.indexOf(s.belt) === BELT_ORDER.length - 1;
+        return `<tr>
+          <td><span class="tag tag--dark">${s.index}</span></td>
+          <td><strong>${s.name}</strong></td>
+          <td>${s.belt}</td>
+          <td class="num-cell">${s.sessions}</td>
+          <td><span class="tag ${ready ? `tag--green` : ``}">${ready ? `Eligible` : `Needs ` + (16 - s.sessions) + ` More`}</span></td>
+          <td>
+            <button type="button" class="btn btn--sm btn--primary" ${atMax ? `disabled` : ``} onclick="promoteStudentBelt('${s.index}')">
+              ${atMax ? `Max Dan` : `Promote Belt`}
+            </button>
+          </td>
+        </tr>`;
+      }).join(``);
+    }
+
+    // Module 5: Printable Certificate Generator
+    function populateCertStudents() {
+      var sel = document.getElementById(`cert-student-select`);
+      var dateInput = document.getElementById(`cert-date-input`);
+      if (!sel) return;
+      if (dateInput && !dateInput.value) dateInput.value = `2026-11-24`;
+      var prev = sel.value;
+      sel.innerHTML = appState.students.map(function (s) {
+        return `<option value="${s.index}">${s.index} — ${s.name} (${s.belt})</option>`;
+      }).join(``);
+      if (prev) sel.value = prev;
+      updateCertificatePreview();
+    }
+
+    function updateCertificatePreview() {
+      var sel = document.getElementById(`cert-student-select`);
+      var typeSel = document.getElementById(`cert-type-select`);
+      var dateEl = document.getElementById(`cert-date-input`);
+      if (!sel) return;
+      var st = appState.students.find(function (s) { return s.index === sel.value; }) || appState.students[0];
+      if (!st) return;
+
+      document.getElementById(`cert-student-name`).textContent = st.name;
+      document.getElementById(`cert-award-line`).textContent = (typeSel ? typeSel.value : `Official Promotion`) + ` — ` + st.belt;
+      document.getElementById(`cert-meta-line`).textContent = `Index: ${st.index} • Awarded on ${dateEl ? dateEl.value : `2026-11-24`} at Kurunegala Headquarters`;
+    }
+
+    function printCertificate() {
+      var slip = document.getElementById(`printable-slip-card`);
+      var cert = document.getElementById(`certificate-print-area`);
+      if (slip) slip.classList.remove(`print-target`);
+      if (cert) cert.classList.add(`print-target`);
+      window.print();
+    }
+
+    // Module 6: Applicant Approval Manager
+    async function approveApplicant(appId) {
+      var app = appState.pendingApplicants.find(function (a) { return a.appId === appId; });
+      if (!app) return;
+      var nextNum = 105 + appState.students.length;
+      var newIndex = `MJS-` + nextNum;
+      while (appState.students.some(function (s) { return s.index === newIndex; })) {
+        nextNum++;
+        newIndex = `MJS-` + nextNum;
+      }
+
+      appState.students.unshift({
+        index: newIndex,
+        name: app.name,
+        phone: app.phone,
+        belt: app.exp.indexOf(`Black`) !== -1 ? `Black Belt (1st Dan)` : `White Belt (10th Kyu)`,
+        track: app.division,
+        sessions: 1,
+        feeStatus: `Pending`,
+        feeAmount: app.division.indexOf(`Seniors`) !== -1 ? 3000 : 2500
+      });
+
+      var now = new Date();
+      var hhmm = String(now.getHours()).padStart(2, `0`) + `:` + String(now.getMinutes()).padStart(2, `0`);
+      appState.smsLog.unshift({
+        time: hhmm,
+        to: app.phone,
+        text: `MJS Smart Dojo: Welcome ${app.name}! Your Kurunegala Dojo Index is ${newIndex}. See you on the mat! OSS!`
+      });
+
+      appState.pendingApplicants = appState.pendingApplicants.filter(function (a) { return a.appId !== appId; });
+      await persistAppState();
+
+      var fb = document.getElementById(`approval-feedback`);
+      if (fb) {
+        fb.textContent = `Approved ${app.name} as ${newIndex} and dispatched Welcome SMS to ${app.phone}.`;
+        fb.className = `status-msg status-msg--ok is-visible`;
+      }
+      renderAllStaffModules();
+    }
+
+    async function declineApplicant(appId, btn) {
+      if (btn.dataset.armed !== `true`) {
+        btn.dataset.armed = `true`;
+        btn.textContent = `Confirm?`;
+        btn.classList.add(`btn--red`);
+        return;
+      }
+      appState.pendingApplicants = appState.pendingApplicants.filter(function (a) { return a.appId !== appId; });
+      await persistAppState();
+      renderApprovals();
+    }
+
+    function renderApprovals() {
+      var tbody = document.getElementById(`approvals-tbody`);
+      var badge = document.getElementById(`pending-count-badge`);
+      if (badge) badge.textContent = String(appState.pendingApplicants.length);
+      if (!tbody) return;
+      if (appState.pendingApplicants.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:var(--on-surface-variant);">All public applications reviewed. New submissions from the Join form will appear here immediately.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = appState.pendingApplicants.map(function (a) {
+        return `<tr>
+          <td><span class="tag tag--blue">${a.appId}</span></td>
+          <td><strong>${a.name}</strong> (Age ${a.age})</td>
+          <td>${a.division}</td>
+          <td>${a.guardian}<br><span class="num-cell">${a.phone}</span></td>
+          <td class="num-cell">${a.date}</td>
+          <td style="display:flex; gap:var(--space-xs); flex-wrap:wrap;">
+            <button type="button" class="btn btn--sm btn--primary" onclick="approveApplicant('${a.appId}')">Approve &amp; Enroll</button>
+            <button type="button" class="btn btn--sm" onclick="declineApplicant('${a.appId}', this)">Decline</button>
+          </td>
+        </tr>`;
+      }).join(``);
+    }
+
+    // =========================================================================
+    // 7. PERSISTENCE & STARTUP LIFECYCLE
+    // =========================================================================
+    async function persistAppState() {
+      if (window.notebookAppApi && window.notebookAppApi.setAppState) {
+        try {
+          await window.notebookAppApi.setAppState(appState);
+        } catch (e) {}
+      }
+    }
+
+    async function initApp() {
+      if (window.notebookAppApi && window.notebookAppApi.getAppState) {
+        try {
+          var saved = await window.notebookAppApi.getAppState();
+          if (saved && Array.isArray(saved.students)) {
+            appState = saved;
+          }
+        } catch (e) {}
+      }
+
+      if (typeof lucide !== `undefined` && lucide.createIcons) {
+        lucide.createIcons();
+      }
+
+      renderTimelineDetail();
+      filterSchedule(`ALL`);
+      initMedalsChart();
+      startTechniqueCanvasLoop();
+      init3DDojo();
+      updatePublicMetricCount();
+      if (appState.lastAdmissionSlip) renderAdmissionSlip(appState.lastAdmissionSlip);
+      renderApprovals();
+
+      if (window.notebookAppApi && window.notebookAppApi.notifyAppReady) {
+        window.notebookAppApi.notifyAppReady();
+      }
+    }
+
+    if (document.readyState === `loading`) {
+      document.addEventListener(`DOMContentLoaded`, initApp);
+    } else {
+      initApp();
+    }
+  </script>
+</body>
+</html>
